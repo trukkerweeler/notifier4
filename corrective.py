@@ -4,31 +4,6 @@ from datetime import datetime, timedelta
 emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "tim.kent@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "craig@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 
-# def getLastSentDate(assignee):
-#     """Get last sent date for assignee."""
-#     sql = f"SELECT MAX(NOTIFY_DATE) FROM CORRECTIVE_NOTIFY WHERE CORRECTIVE_ID = '{assignee}' and STAGE = 'O'"
-#     records = utils.getDatabaseData(sql)
-#     for row in records:
-#         lastSentDate = row[0]
-#     return lastSentDate
-
-def setLastSentFile():
-    """Set the date in the last sent file."""
-    lastSentFile = "lastSent.txt"
-    with open(lastSentFile, "w") as f:
-        f.write(str(datetime.today()))
-        
-        
-def getLastSentFile():
-    """Get the date from the last sent file, add 12 days to it."""
-    lastSentFile = "lastSent.txt"
-    if os.path.exists(lastSentFile):
-        with open(lastSentFile, "r") as f:
-            lastSentDate = f.read().split()[0]
-            lastSentDate = datetime.strptime(lastSentDate, '%Y-%m-%d') + timedelta(days=10)
-    else:
-        lastSentDate = datetime.today() - timedelta(days=10)
-    return lastSentDate
 
 
 def getAssignees():
@@ -45,8 +20,8 @@ def overdues():
     """Identify overdue correctives and send email to appropriate people."""
     dayofweek = datetime.today().weekday()
     # print(dayofweek)
-    # print(getLastSentFile())
-    if dayofweek in [0,1,2,3] and datetime.today() > getLastSentFile() and datetime.today().hour in [8,9,10,11,12,13,14,15,16,17,18,19,20,21]:
+    # print(utils.getLastSentFile('corrective'))
+    if dayofweek in [0,1,2,3] and datetime.today() > utils.getLastSentFile("corrective") and datetime.today().hour in [8,9,10,11,12,13,14,15,16,17,18,19,20,21]:
         assignees = getAssignees()
         for assignee in assignees:
             email = emails[assignee.upper()]
@@ -67,9 +42,9 @@ def overdues():
                 odcas += f"{caid} - {row[1]} - {cadate} - {duedate} - {title}\n"
             if len(odcas) > 0:
                 utils.sendMail(to_email=[email], subject="Overdue Correctives", message=str(odcas))
-        setLastSentFile()
+        utils.setLastSentFile('corrective')
     else:
-        print("Not sending overdue CA's, too soon or off-hours. Last sent +10: " + str(getLastSentFile()) + " Current: " + str(datetime.today()))
+        print("Not sending overdue CA's, too soon or off-hours. Last sent +10: " + str(utils.getLastSentFile('corrective')) + " Current: " + str(datetime.today()))
 
 
 def closeout():

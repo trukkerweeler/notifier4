@@ -35,7 +35,7 @@ def main():
                             print(sql)
                             cursor.execute(sql, (causeText, caid))
                             connection.commit()
-                            print(f"Inserted into CORRECTIVE_CTRL")
+                            # print(f"Inserted into CORRECTIVE_CTRL")
 
     except Error as e:
         print("Error while connecting to MySQL", e)

@@ -3,7 +3,7 @@ import datetime as dt
 import utils
 
 def noninvshl():
-    xlfile = r"C:\Users\timK\Documents\Non Inventory Expirations.xls"
+    # xlfile = r"C:\Users\timK\Documents\Non Inventory Expirations.xls"
     xlfile = r"K:\Quality\08540 - Preservation\Non Inventory Expirations.xls"
     df = pd.read_excel(xlfile, sheet_name="Sheet1", header=0, index_col=None, usecols="A:G", engine="xlrd")
     print(df)
@@ -26,13 +26,14 @@ def noninvshl():
 
         print(dtDoe - dt.date.today())
 
-        if dtDoe - dt.date.today() < dt.timedelta(days=30) and dtDoe - dt.date.today() > dt.timedelta(days=-500):
-            notification = (f"{po} {part} {description} {lot} {dom} {dtDoe} {disposition}")
-            # print("Yep")
-            utils.sendMail(to_email=["ritam@ci-aviation.com"], subject=f"Expired Material Report: {po}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
-        
-        else:
-            print("Nope")
+        if disposition not in ['Q', 'NF']:
+            if dtDoe - dt.date.today() < dt.timedelta(days=30) and dtDoe - dt.date.today() > dt.timedelta(days=-500):
+                notification = (f"{po} {part} {description} {lot} {dom} {dtDoe} {disposition}")
+                # print("Yep")
+                utils.sendMail(to_email=["ritam@ci-aviation.com"], subject=f"Expired Material Report: {po}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
+            
+            else:
+                print("Nope")
 
     #     print(row['DESCRIPTION'][row])
     #     if row[0] == 0:
@@ -57,7 +58,11 @@ def noninvshl():
 
 def main():
     """Read excel file and identify non-inventory items that are expiring soon."""
-    noninvshl()
+    if utils.getLastSentFile('noninvshl') < dt.datetime.today() - dt.timedelta(days=10):
+        noninvshl()
+        utils.setLastSentFile('noninvshl')
+    else:
+        print("Not sending non-inventory expirations, too soon or off-hours. Last sent +10: " + str(utils.getLastSentFile('noninvshl')) + " Current: " + str(dt.datetime.today()))
 
 if __name__ == "__main__":
     main()

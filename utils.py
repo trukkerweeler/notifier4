@@ -1,5 +1,5 @@
-import os
-from datetime import datetime
+import os, sys
+from datetime import datetime, timedelta
 
 
 def ranToday(script):
@@ -86,7 +86,7 @@ def updateDatabaseData(sql):
             cursor = connection.cursor()
             cursor.execute(sql)
             connection.commit()
-            print(f"Inserted into {table}")
+            # print(f"Inserted into {table}")
     except Error as e:
         print("Error while connecting to MySQL", e)
     finally:
@@ -116,3 +116,22 @@ def emailAddress(name):
     finally:
         if (connection.is_connected()):
             connection.close()
+
+def setLastSentFile(file):
+    """Set the date in the last sent file."""
+    lastSentFile = file + "Lastsent.txt"
+    with open(lastSentFile, "w") as f:
+        f.write(str(datetime.today()))
+        
+        
+def getLastSentFile(file):
+    """Get the date from the last sent file, add 12 days to it."""
+    lastSentFile = file + "Lastsent.txt"
+    print(lastSentFile)
+    if os.path.exists(lastSentFile):
+        with open(lastSentFile, "r") as f:
+            lastSentDate = f.read().split()[0]
+            lastSentDate = datetime.strptime(lastSentDate, '%Y-%m-%d') + timedelta(days=10)
+    else:
+        lastSentDate = datetime.today() - timedelta(days=10)
+    return lastSentDate

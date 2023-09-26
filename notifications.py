@@ -1,7 +1,7 @@
 import utils
-from email.message import EmailMessage
+# from email.message import EmailMessage
 from datetime import datetime, timedelta
-import sysdoc, setup, corrective, input
+import sysdoc, setup, corrective, input, supplier, noninvshl
 
 
 def updateDatabaseData(sql):
@@ -18,7 +18,7 @@ def updateDatabaseData(sql):
             cursor = connection.cursor()
             cursor.execute(sql)
             connection.commit()
-            print(f"Inserted into {table}")
+            # print(f"Inserted into {table}")
     except Error as e:
         print("Error while connecting to MySQL", e)
     finally:
@@ -40,16 +40,16 @@ def formatOverdueASL(overdueASL):
 def main():
     """Goes through tables and identifies overdue items. Sends email to appropriate people."""
     
-    # ASL=======================================================
-    sql1 = "select s.SUPPLIER_ID, s.NAME, s.CITY, s.STATUS, sq.QMS, sq.CERTIFICATE, sq.EXPIRY, ss.SCOPE, sc.COMMENTS from SUPPLIER s left join SUPPLIER_QMS sq on s.SUPPLIER_ID = sq.SUPPLIER_ID left join SUPPLIER_SCOPE ss on s.SUPPLIER_ID = ss.SUPPLIER_ID left join SUPPLIER_COMMENTS sc on s.SUPPLIER_ID = sc.SUPPLIER_ID where STATUS = 'A' and datediff(Now(),EXPIRY)>1;"
-    overDueASL = utils.getDatabaseData(sql1)
-    # formattedOverdueASL = formatOverdueASL(overDueASL)
-    overDueASL = "Overdue ASL: \n" + str(overDueASL) + "\n"
-    print(overDueASL)
-    if overDueASL != "Overdue ASL: \n[]\n":
-        utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject="Overdue ASL", message=overDueASL)
-    else:
-        print("No overdue ASL")
+    # # ASL=======================================================
+    # sql1 = "select s.SUPPLIER_ID, s.NAME, s.CITY, s.STATUS, sq.QMS, sq.CERTIFICATE, sq.EXPIRY, ss.SCOPE, sc.COMMENTS from SUPPLIER s left join SUPPLIER_QMS sq on s.SUPPLIER_ID = sq.SUPPLIER_ID left join SUPPLIER_SCOPE ss on s.SUPPLIER_ID = ss.SUPPLIER_ID left join SUPPLIER_COMMENTS sc on s.SUPPLIER_ID = sc.SUPPLIER_ID where STATUS = 'A' and datediff(Now(),EXPIRY)>1;"
+    # overDueASL = utils.getDatabaseData(sql1)
+    # # formattedOverdueASL = formatOverdueASL(overDueASL)
+    # overDueASL = "Overdue ASL: \n" + str(overDueASL) + "\n"
+    # print(overDueASL)
+    # if overDueASL != "Overdue ASL: \n[]\n":
+    #     utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject="Overdue ASL", message=overDueASL)
+    # else:
+    #     print("No overdue ASL")
 
 
     # Training==================================================
@@ -74,4 +74,6 @@ if __name__ == "__main__":
     sysdoc.main()
     corrective.main()
     input.main()
+    supplier.main()
+    noninvshl.main()
     print("Done.")
