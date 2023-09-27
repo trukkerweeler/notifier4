@@ -28,7 +28,7 @@ def checkDocs():
     Sends email for missing docs. Only runs once per day."""
   
     audit = []
-    sql = "SELECT * FROM DOCS_AVAIL"
+    sql = "SELECT * FROM DOCS_AVAIL join DOCUMENTS on DOCS_AVAIL.DOCUMENT_ID = DOCUMENTS.DOCUMENT_ID where DOCUMENTS.STATUS = 'C';"
     records = utils.getDatabaseData(sql)
     for row in records:
         # check control location
