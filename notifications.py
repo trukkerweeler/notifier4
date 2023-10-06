@@ -39,19 +39,6 @@ def formatOverdueASL(overdueASL):
 
 def main():
     """Goes through tables and identifies overdue items. Sends email to appropriate people."""
-    
-    # # ASL=======================================================
-    # sql1 = "select s.SUPPLIER_ID, s.NAME, s.CITY, s.STATUS, sq.QMS, sq.CERTIFICATE, sq.EXPIRY, ss.SCOPE, sc.COMMENTS from SUPPLIER s left join SUPPLIER_QMS sq on s.SUPPLIER_ID = sq.SUPPLIER_ID left join SUPPLIER_SCOPE ss on s.SUPPLIER_ID = ss.SUPPLIER_ID left join SUPPLIER_COMMENTS sc on s.SUPPLIER_ID = sc.SUPPLIER_ID where STATUS = 'A' and datediff(Now(),EXPIRY)>1;"
-    # overDueASL = utils.getDatabaseData(sql1)
-    # # formattedOverdueASL = formatOverdueASL(overDueASL)
-    # overDueASL = "Overdue ASL: \n" + str(overDueASL) + "\n"
-    # print(overDueASL)
-    # if overDueASL != "Overdue ASL: \n[]\n":
-    #     utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject="Overdue ASL", message=overDueASL)
-    # else:
-    #     print("No overdue ASL")
-
-
     # Training==================================================
     sql2 = "select * from CTA_ATTENDANCE where datediff(Now(),EXPIRATION_DATE)>1;"
     overDueTraining = utils.getDatabaseData(sql2)
