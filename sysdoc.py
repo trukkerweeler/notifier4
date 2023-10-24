@@ -51,14 +51,18 @@ def checkDocs():
     utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 
-def main():
-    if utils.ranToday("sysdoc") == True:
-        print("Already ran today - sysdoc.py")
-    else:  
-        releaseNotifications()
+def main(test = 0):    
+    if test == 1:
+        print("Starting sysdoc.py in test.")
         checkDocs()
+    else:
+        if utils.ranToday("sysdoc") == True:
+            print("Already ran today - sysdoc.py")
+        else:  
+            releaseNotifications()
+            checkDocs()
 
 
 if __name__ == '__main__':
-    main()
+    main(test=1)
     print("done")

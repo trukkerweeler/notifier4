@@ -15,8 +15,12 @@ def noninvshl():
         description = row[1]['DESCRIPTION']
         lot = row[1]['LOT/BATCH']
         dom = row[1]['DOM']
+        if dom == "nan":
+            dom = "--"
         doe = row[1]['DOE']
         disposition = row[1]['DISPOSITION']
+        if disposition == "nan":
+            disposition = ""
 
         # print(f"{po} {part} {description} {lot} {dom} {doe} {disposition}")
         # print(type(doe))
@@ -30,7 +34,7 @@ def noninvshl():
             if dtDoe - dt.date.today() < dt.timedelta(days=30) and dtDoe - dt.date.today() > dt.timedelta(days=-500):
                 notification = (f"{po} {part} {description} {lot} {dom} {dtDoe} {disposition}")
                 # print("Yep")
-                utils.sendMail(to_email=["ritam@ci-aviation.com"], subject=f"Expired Material Report: {po}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
+                utils.sendMail(to_email=["ritam@ci-aviation.com", "craig@ci-aviation.com"], subject=f"Expired Material Item: {po}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
             
             else:
                 print("Nope")
@@ -58,11 +62,17 @@ def noninvshl():
 
 def main():
     """Read excel file and identify non-inventory items that are expiring soon."""
-    if utils.getLastSentFile('noninvshl') < dt.datetime.today() - dt.timedelta(days=10):
+    print("Starting non-inventory expirations...")
+    lsdtplus10 = utils.getLastSentFile('noninvshl')
+    # print(lsdtplus10)
+    
+    if lsdtplus10 < dt.datetime.today():
         noninvshl()
         utils.setLastSentFile('noninvshl')
     else:
         print("Not sending non-inventory expirations, too soon or off-hours. Last sent +10: " + str(utils.getLastSentFile('noninvshl')) + " Current: " + str(dt.datetime.today()))
+    print("Done.")
+
 
 if __name__ == "__main__":
     main()

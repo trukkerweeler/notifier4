@@ -127,7 +127,7 @@ def setLastSentFile(file):
 def getLastSentFile(file):
     """Get the date from the last sent file, add 12 days to it."""
     lastSentFile = file + "Lastsent.txt"
-    print(lastSentFile)
+    # print(lastSentFile)
     if os.path.exists(lastSentFile):
         with open(lastSentFile, "r") as f:
             lastSentDate = f.read().split()[0]
@@ -135,3 +135,84 @@ def getLastSentFile(file):
     else:
         lastSentDate = datetime.today() - timedelta(days=10)
     return lastSentDate
+
+def getNextSysid(description):
+    """Get the next sysid from the database."""
+    sql = "select CURRENT_ID from SYSTEM_IDS where DESCRIPTION = '{description}'".format (description=description)
+    # print(sql)
+    sysid = getDatabaseData(sql)
+    # convert to number
+    sysid = int(sysid[0][0])
+    # increment
+    sysid += 1
+    #prepends with zeros
+    while len(str(sysid)) < 7:
+        sysid = "0" + str(sysid)
+    # increment in database
+    sql = "update SYSTEM_IDS set CURRENT_ID = '{sysid}' where DESCRIPTION = '{description}'".format(sysid=sysid, description=description)
+    updateDatabaseData(sql)
+    return sysid
+
+def getProjectName(projectid):
+    """Get the project name from the database."""
+    sql = "select NAME from PROJECT where PROJECT_ID = '{projectid}'".format(projectid=projectid)
+    # print(sql)
+    projectname = getDatabaseData(sql)
+
+    return projectname
+
+
+def getProjectId(iid):
+    """Get the project id from the database."""
+    sql = "select PROJECT_ID from PEOPLE_INPUT where INPUT_ID = '{iid}'".format(iid=iid)
+    # print(sql)
+    projectid = getDatabaseData(sql)
+    return projectid[0][0]
+
+
+def getAttachmentPath(sysid, recType):
+    """Get the attachment from the records directory."""
+    match recType:
+        case "sysdoc": 
+            path = "C:\\Users\\timk\\Documents\\Python\\sysdoc\\records\\"
+        case "corrective":
+            path = "\\\\fs1\\Quality - Records\\10200C - Corrective Actions\\2023\\"
+            path = "K:\\Quality - Records\\10200C - Corrective Actions\\2023\\"
+            
+        case default:
+            path = ""
+    # print(path)
+    if path != "":
+        for folder in os.listdir(path):
+            # print(f"folder: {folder}")
+            if folder.startswith(sysid):
+                for file in os.listdir(path + folder):
+                    # print(os.path.join(path, folder, file))
+                    if file.endswith(".pdf") and file.startswith(sysid) and not file.endswith("closeout.pdf"):
+                        attachment = path + folder + "\\" + file
+                        return attachment                        
+    else:
+        return None
+    
+
+def WeekLastSent(file):
+    """Get the week number from the last sent file."""
+    lastSentFile = file + "Lastsent.txt"
+    # print(lastSentFile)
+    if os.path.exists(lastSentFile):
+        with open(lastSentFile, "r") as f:
+            lastSentDate = f.read().split()[0]
+            lastSentDate = datetime.strptime(lastSentDate, '%Y-%m-%d').isocalendar()[1]
+    else:
+        lastSentDate = datetime.today().isocalendar()[1] - 1
+    return lastSentDate
+
+
+
+if __name__ == '__main__':
+    # print(getNextSysid("INPUT_ID"))
+    # print(getProjectName("0000055"))
+    # print(getProjectId("0000055"))
+    # print(getAttachmentPath("0001219", "corrective"))
+    # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    print(WeekLastSent('project'))

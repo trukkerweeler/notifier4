@@ -49,16 +49,27 @@ def overdues():
 
 def closeout():
     """Identify closed correctives and send email to appropriate people."""
-    sql4 = "select c.CORRECTIVE_ID from CORRECTIVE c left join CORRECTIVE_NOTIFY cn on c.CORRECTIVE_ID = cn.CORRECTIVE_ID where cn.NOTIFY_DATE is null and DATE(c.CLOSED_DATE) > '2023-08-14';"
-    # sql4 = "select c.CORRECTIVE_ID from CORRECTIVE c left join CORRECTIVE_NOTIFY cn on c.CORRECTIVE_ID = cn.CORRECTIVE_ID where cn.NOTIFY_DATE is null;"
+    # sql4 = "select c.CORRECTIVE_ID from CORRECTIVE c left join CORRECTIVE_NOTIFY cn on c.CORRECTIVE_ID = cn.CORRECTIVE_ID where cn.NOTIFY_DATE is null and DATE(c.CLOSED_DATE) > '2023-08-14';"
+    # sql4 = "select c.CORRECTIVE_ID, c.CLOSED_DATE, cn.NOTIFY_DATE, cn.STAGE from CORRECTIVE c left join CORRECTIVE_NOTIFY cn on c.CORRECTIVE_ID = cn.CORRECTIVE_ID and cn.STAGE = 'C' where (cn.NOTIFY_DATE is null) and DATE(c.CLOSED_DATE) > '2023-08-14';"
+    sql4 = "select c.CORRECTIVE_ID from CORRECTIVE c left join CORRECTIVE_NOTIFY cn on c.CORRECTIVE_ID = cn.CORRECTIVE_ID and cn.STAGE = 'C' where (cn.NOTIFY_DATE is null) and DATE(c.CLOSED_DATE) > '2023-08-14';"
     noNotifications = utils.getDatabaseData(sql4)
     noNotificationsDisplay = "CA notifications: \n" + str(noNotifications) + "\n"
     # print(noNotificationsDisplay)
     for corrid in noNotifications:
-        notification = '''The following corrective action has been closed. Please review and take appropriate action(s). \nCorrective id: %s''' % (corrid)
+        attachmentPath = utils.getAttachmentPath(corrid[0], "corrective")
+        notification = '''The following corrective action has been closed. Please review and take appropriate final action(s). \n \n %s \nCorrective id: %s''' % (attachmentPath, corrid[0])
         # print(f"--- {corrid[0]} ---")
-        print(notification)
+        # print(notification)
         utils.sendMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
+
+        # # print(f"attachment: {attachment}")
+        # if (attachment is None):
+        #     # utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
+        #     utils.sendMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
+        # else:
+        #     # utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification, add_attachment={attachment})
+        #     utils.sendMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification, attachment=attachment)
+
         insertSql = f"insert into CORRECTIVE_NOTIFY (CORRECTIVE_ID, STAGE, NOTIFY_DATE) values ('{corrid[0]}', 'C', NOW());"
         utils.updateDatabaseData(insertSql)
 
@@ -88,10 +99,10 @@ def issuedNotification():
 
 
 def main():
-    issuedNotification()
-    print("==========================================")
-    overdues()
-    print("==========================================")
+    # issuedNotification()
+    # print("==========================================")
+    # overdues()
+    # print("==========================================")
     closeout()
 
     
