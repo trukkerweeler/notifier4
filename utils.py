@@ -46,7 +46,7 @@ def getDatabaseData(sql):
             cursor.close()
             connection.close()
 
-def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", cc_email=""):
+def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", display="message/rfc822", cc_email=""):
     import smtplib, ssl
     from email.message import EmailMessage
     PORT = 465
@@ -66,6 +66,7 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
     msg["To"] = to_email
     msg["Cc"] = cc_email
     msg.set_content(message)
+    msg.set_default_type(display)
     server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
     server.login(USERNAME, PASSWORD)
     server.send_message(msg)
