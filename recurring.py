@@ -22,9 +22,10 @@ def getNotDones():
 
 def createInputRecords(notDones):
     """Creates PPL_INPT records for recurring items."""
-    input_date = datetime.today()
+    # input_date = datetime.today()
     nextMonth = datetime.today() + timedelta(days=32)
-    fdonm = nextMonth.replace(day=1)    
+    fdonm = nextMonth.replace(day=1)
+    
 
     for notDone in notDones:
         nid = utils.getNextSysid("INPUT_ID")
@@ -34,55 +35,41 @@ def createInputRecords(notDones):
         frequency = notDone[3]
         subject = notDone[4]
         projectid = utils.getProjectId(iid)
+        startdate = datetime.today().strftime('%Y-%m-%d')
 
         #determine due date
         match frequency:
             case "W":
                 due_date = datetime.today() + timedelta(days=7)
-                # Wednesday
-                if due_date.weekday() == 5:
-                    replacement_date = due_date - timedelta(days=2)
-                    due_date = replacement_date
-                    break
-                # Thursday
-                if due_date.weekday() == 4:
-                    replacement_date = due_date - timedelta(days=3)
-                    due_date = replacement_date
-                    break
-                # Friday
-                if due_date.weekday() == 5:
-                    replacement_date = due_date - timedelta(days=4)
-                    due_date = replacement_date
-                    break
-                # Saturday
-                elif due_date.weekday() == 6:
-                    replacement_date = due_date - timedelta(days=4)
-                    due_date = replacement_date
-                    break
-
-                input_date = due_date - timedelta(days=10)
-
+                #get the first day of next week
+                fdonw = datetime.today() + timedelta(days=7) 
+                fdonw = fdonw - timedelta(days=fdonw.weekday())
+                startdate = fdonw.strftime('%Y-%m-%d')
+                due_date = fdonw + timedelta(days=5)
+                due_date = due_date.strftime('%Y-%m-%d')
 
             case "M":
                 # nextMonth = datetime.today() + timedelta(days=32)
                 due_date = nextMonth.replace(day=1)
-                input_date = due_date
+                startdate = fdonm
+
             case "Q":
                 due_date = datetime.today() + timedelta(weeks=12)
                 due_date = due_date.replace(day=1)
-                input_date = due_date
+                startdate = due_date
+                
             case "A":
                 due_date = datetime.today() + timedelta(days=365)
                 due_date = due_date.replace(day=1)
-                input_date = due_date - timedelta(days=10)
+                startdate = due_date - timedelta(days=10)
 
             case "BE":
                 intwoyears = datetime.today() + timedelta(days=365*2)
                 due_date = intwoyears
-                input_date = due_date - timedelta(days=10)
+                startdate = due_date - timedelta(days=10)
 
         
-        input_date = input_date.strftime('%Y-%m-%d')
+        # input_date = input_date.strftime('%Y-%m-%d')
 
         updateSql = (f"insert into PEOPLE_INPUT (INPUT_ID"
         ", INPUT_DATE"
@@ -107,8 +94,8 @@ def createInputRecords(notDones):
         ", '{projectid}'"
         ", '{rid}'"
         ", 'RCUR'"
-        ", NOW() )".format(nid=nid, date=fdonm, due_date=due_date, subject=subject, assto=assto, projectid=projectid, rid=rid))
-        # print(updateSql)
+        ", NOW() )".format(nid=nid, date=startdate, due_date=due_date, subject=subject, assto=assto, projectid=projectid, rid=rid))
+        print(updateSql)
         utils.updateDatabaseData(updateSql)
         # copy text from recurring item to new input record
         text = utils.getDatabaseData(f"select INPUT_TEXT from PPL_INPT_TEXT where INPUT_ID = '{iid}'")

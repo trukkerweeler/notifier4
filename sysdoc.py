@@ -28,7 +28,7 @@ def checkDocs():
     Sends email for missing docs. Only runs once per day."""
   
     audit = []
-    sql = "SELECT * FROM DOCS_AVAIL join DOCUMENTS on DOCS_AVAIL.DOCUMENT_ID = DOCUMENTS.DOCUMENT_ID where DOCUMENTS.STATUS = 'C';"
+    sql = "SELECT * FROM DOCS_AVAIL join DOCUMENTS on DOCS_AVAIL.DOCUMENT_ID = DOCUMENTS.DOCUMENT_ID where DOCUMENTS.STATUS = 'C' and DOCS_AVAIL.CTRL_DOC != 'Global Generated';"
     records = utils.getDatabaseData(sql)
     for row in records:
         # check control location
@@ -57,12 +57,17 @@ def main(test = 0):
         checkDocs()
     else:
         if utils.ranToday("sysdoc") == True:
-            print("Already ran today - sysdoc.py")
+            userRunAgain = input("Already ran today - sysdoc.py, do you want to run again? (y/n)")
+            if userRunAgain == "y":
+                checkDocs()
+            else:
+                print("Not running again.")
+
         else:  
             releaseNotifications()
             checkDocs()
 
 
 if __name__ == '__main__':
-    main(test=1)
+    main(test=0)
     print("done")

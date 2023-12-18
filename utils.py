@@ -46,7 +46,8 @@ def getDatabaseData(sql):
             cursor.close()
             connection.close()
 
-def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", display="message/rfc822", cc_email=""):
+def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", cc_email="tim.kent@ci-aviation.com"):
+    print(f"Email subject to {subject} from {from_email}")
     import smtplib, ssl
     from email.message import EmailMessage
     PORT = 465
@@ -66,7 +67,7 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", d
     msg["To"] = to_email
     msg["Cc"] = cc_email
     msg.set_content(message)
-    msg.set_default_type(display)
+    # msg.set_default_type(display)
     server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
     server.login(USERNAME, PASSWORD)
     server.send_message(msg)
@@ -215,5 +216,5 @@ if __name__ == '__main__':
     # print(getProjectName("0000055"))
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
-    # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
-    print(WeekLastSent('project'))
+    sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    # print(WeekLastSent('project'))

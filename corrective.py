@@ -1,7 +1,7 @@
 import utils, os, sys
 from datetime import datetime, timedelta
 
-emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "tim.kent@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
+# emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "tim.kent@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "craig@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 
 
@@ -24,7 +24,8 @@ def overdues():
     if dayofweek in [0,1,2,3] and datetime.today() > utils.getLastSentFile("corrective") and datetime.today().hour in [8,9,10,11,12,13,14,15,16,17,18,19,20,21]:
         assignees = getAssignees()
         for assignee in assignees:
-            email = emails[assignee.upper()]
+            email = utils.emailAddress(assignee)
+            # print(email)
             # odcas = "Dear Quality Team,\n\n"
             odcas = "The corrective action meeting is soon. Please prepare to discuss appropriate actions. The following correctives are overdue:\n\n"
             sql = f"SELECT CORRECTIVE_ID, ASSIGNED_TO, CORRECTIVE_DATE, DUE_DATE, TITLE FROM CORRECTIVE WHERE CLOSED = 'N' AND ASSIGNED_TO = '{assignee}' and (DUE_DATE < CURRENT_DATE() or DUE_DATE is null)"
@@ -41,7 +42,8 @@ def overdues():
                 title = row[4]
                 odcas += f"{caid} - {row[1]} - {cadate} - {duedate} - {title}\n"
             if len(odcas) > 0:
-                utils.sendMail(to_email=[email], subject="Overdue Correctives", message=str(odcas))
+                utils.sendMail(to_email=[email], subject="Overdue Correctives", message=str(odcas), cc_email="")
+                # utils.sendMail("tim.kent@ci-aviation.com", subject="Overdue Correctives", message=str(odcas), cc_email="")
         utils.setLastSentFile('corrective')
     else:
         print("Not sending overdue CA's, too soon or off-hours. Last sent +10: " + str(utils.getLastSentFile('corrective')) + " Current: " + str(datetime.today()))
@@ -57,7 +59,11 @@ def closeout():
     # print(noNotificationsDisplay)
     for corrid in noNotifications:
         attachmentPath = utils.getAttachmentPath(corrid[0], "corrective")
-        notification = '''The following corrective action has been closed. Please review and take appropriate final action(s). \n \n %s \nCorrective id: %s''' % (attachmentPath, corrid[0])
+        if attachmentPath is not None:
+            attachment = attachmentPath
+        else:
+            attachment = "K:\\Quality - Records\\10200C - Corrective Actions"
+        notification = '''The following corrective action has been closed. Please review and take appropriate final action(s). \n \n %s \nCorrective id: %s''' % (attachment, corrid[0])
         # print(f"--- {corrid[0]} ---")
         # print(notification)
         utils.sendMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
@@ -99,9 +105,9 @@ def issuedNotification():
 
 
 def main():
-    # issuedNotification()
+    issuedNotification()
     # print("==========================================")
-    # overdues()
+    overdues()
     # print("==========================================")
     closeout()
 

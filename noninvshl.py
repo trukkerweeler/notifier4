@@ -58,7 +58,7 @@ def noninvshl():
 
             # print(dtDoe - dt.date.today())
 
-            if disposition not in ['Q', 'NF']:
+            if disposition not in ['C', 'NF', 'D']:
                 if dtDoe - dt.date.today() < dt.timedelta(days=30) and dtDoe - dt.date.today() > dt.timedelta(days=-500):
                     # notification += (f"<tr><td>{po}</td><td>{part}</td><td>{description}</td><td>{lot}</td><td>{dom}</td><td>{dtDoe}</td><td>{disposition}</td></tr>")
                     notification += (f"{po} {part} {description} {lot} {dom} {dtDoe} {disposition}\n")

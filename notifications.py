@@ -1,7 +1,7 @@
 import utils
 # from email.message import EmailMessage
 from datetime import datetime, timedelta
-import sysdoc, setup, corrective, input, supplier, noninvshl, recurring, project
+import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project
 
 
 def updateDatabaseData(sql):
@@ -56,13 +56,15 @@ def main():
 
 if __name__ == "__main__":
     main()
-    setup.main()
-    setup.distro()
+    sysdocsetup.main()
+    sysdocsetup.distro()
     sysdoc.main()
     corrective.main()
     input.main()
     supplier.main()
     noninvshl.main()
     recurring.main()
-    project.main()
+    project.main('CHARRISON')
+    project.main('MTIPPETTS')
+    project.main('RMATSAMAS')
     print("Done.")
