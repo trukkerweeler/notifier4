@@ -1,29 +1,7 @@
 import utils
 # from email.message import EmailMessage
 from datetime import datetime, timedelta
-import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project
-
-
-def updateDatabaseData(sql):
-    # print(sql)
-    table = sql.split()[2]
-    import mysql.connector
-    from mysql.connector import Error
-    try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                              database='quality',
-                                              user='admin',
-                                              password='A1rplane$$$')
-        if connection.is_connected():
-            cursor = connection.cursor()
-            cursor.execute(sql)
-            connection.commit()
-            # print(f"Inserted into {table}")
-    except Error as e:
-        print("Error while connecting to MySQL", e)
-    finally:
-        if (connection.is_connected()):
-            connection.close()
+import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project, correctivehelper
 
 
 def formatOverdueASL(overdueASL):
@@ -60,6 +38,7 @@ if __name__ == "__main__":
     sysdocsetup.distro()
     sysdoc.main()
     corrective.main()
+    correctivehelper.main()
     input.main()
     supplier.main()
     noninvshl.main()

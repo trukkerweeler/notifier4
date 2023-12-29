@@ -2,9 +2,13 @@ import utils
 from datetime import datetime, timedelta
 
 def getNotDones():
-    """Goes through tables and identifies recurring items w/o open gt first of next month. Creates PPL_INPT record for those."""
-    sql = """select USER_DEFINED_2 from quality.PPL_INPT_RCUR pir left join PEOPLE_INPUT pi on pir.RECUR_ID = pi.USER_DEFINED_2 
-            where CLOSED = 'N' and pi.DUE_DATE > LAST_DAY(CURRENT_DATE())"""
+    """Goes through tables and returns recurring items w/o future action."""
+    # sql = """select USER_DEFINED_2 from quality.PPL_INPT_RCUR pir left join PEOPLE_INPUT pi on pir.RECUR_ID = pi.USER_DEFINED_2 
+    #         where CLOSED = 'N' and pi.DUE_DATE > LAST_DAY(CURRENT_DATE())"""
+    # sql = """select USER_DEFINED_2, FREQUENCY, DUE_DATE from quality.PPL_INPT_RCUR pir left join PEOPLE_INPUT pi on pir.RECUR_ID = pi.USER_DEFINED_2 
+    #         where CLOSED = 'N' and pi.DUE_DATE > LAST_DAY(CURRENT_DATE())"""
+    sql = """select USER_DEFINED_2, FREQUENCY, DUE_DATE from quality.PPL_INPT_RCUR pir left join PEOPLE_INPUT pi on pir.RECUR_ID = pi.USER_DEFINED_2 
+            where CLOSED = 'N' and pi.DUE_DATE > CURRENT_DATE()"""
     alreadyDone = utils.getDatabaseData(sql)
     done = []
     notDone = []
@@ -20,15 +24,13 @@ def getNotDones():
     
     return notDone
 
-def createInputRecords(notDones):
-    """Creates PPL_INPT records for recurring items."""
+
+def prepareInputRecords(notDones):
+    """Prepares PPL_INPT records for insertion, then inserts."""
     # input_date = datetime.today()
     nextMonth = datetime.today() + timedelta(days=32)
-    fdonm = nextMonth.replace(day=1)
-    
 
     for notDone in notDones:
-        nid = utils.getNextSysid("INPUT_ID")
         rid = notDone[0]
         iid = notDone[1]
         assto = notDone[2]
@@ -47,17 +49,21 @@ def createInputRecords(notDones):
                 startdate = fdonw.strftime('%Y-%m-%d')
                 due_date = fdonw + timedelta(days=5)
                 due_date = due_date.strftime('%Y-%m-%d')
+                if subject == "QTPH":
+                    if utils.week_of_month(startdate) > 1:
+                        assto = "OGULOBOVIC"
 
             case "M":
                 # nextMonth = datetime.today() + timedelta(days=32)
                 due_date = nextMonth.replace(day=1)
+                fdonm = nextMonth.replace(day=1)    
                 startdate = fdonm
 
             case "Q":
                 due_date = datetime.today() + timedelta(weeks=12)
                 due_date = due_date.replace(day=1)
                 startdate = due_date
-                
+
             case "A":
                 due_date = datetime.today() + timedelta(days=365)
                 due_date = due_date.replace(day=1)
@@ -67,11 +73,14 @@ def createInputRecords(notDones):
                 intwoyears = datetime.today() + timedelta(days=365*2)
                 due_date = intwoyears
                 startdate = due_date - timedelta(days=10)
-
         
-        # input_date = input_date.strftime('%Y-%m-%d')
+        insertRecurringRecord(startdate, due_date, subject, assto, projectid, rid, iid)
+        
 
-        updateSql = (f"insert into PEOPLE_INPUT (INPUT_ID"
+def insertRecurringRecord(startdate, duedate, subject, assto, projectid, rid, iid):
+    """Inserts a recurring record into PPL_INPT_RCUR."""
+    nid = utils.getNextSysid("INPUT_ID")
+    updateSql = (f"insert into PEOPLE_INPUT (INPUT_ID"
         ", INPUT_DATE"
         ", PEOPLE_ID"
         ", INPUT_TYPE"
@@ -89,29 +98,44 @@ def createInputRecords(notDones):
         ", 'DATA'"
         ", '{subject}'"
         ", '{assto}'"
-        ", '{due_date}'"
+        ", '{duedate}'"
         ", 'N'"
         ", '{projectid}'"
         ", '{rid}'"
         ", 'RCUR'"
-        ", NOW() )".format(nid=nid, date=startdate, due_date=due_date, subject=subject, assto=assto, projectid=projectid, rid=rid))
-        print(updateSql)
-        utils.updateDatabaseData(updateSql)
-        # copy text from recurring item to new input record
-        text = utils.getDatabaseData(f"select INPUT_TEXT from PPL_INPT_TEXT where INPUT_ID = '{iid}'")
-        text = text[0][0]
-        text = text.replace("'", "\\'")
-        updateSql = f"insert into PPL_INPT_TEXT values ('{nid}', '{text}')"
-        utils.updateDatabaseData(updateSql)
+        ", NOW() )".format(nid=nid, date=startdate, duedate=duedate, subject=subject, assto=assto, projectid=projectid, rid=rid))
+    print(updateSql)
+    utils.updateDatabaseData(updateSql)
+
+    # copy text from recurring item to new input record
+    text = utils.getDatabaseData(f"select INPUT_TEXT from PPL_INPT_TEXT where INPUT_ID = '{iid}'")
+    text = text[0][0]
+    text = text.replace("'", "\\'")
+    updateSql = f"insert into PPL_INPT_TEXT values ('{nid}', '{text}')"
+    utils.updateDatabaseData(updateSql)
+
 
 def main():
+    """Goes through tables and identifies recurring items w/o future action. Creates PPL_INPT record for those."""
     # print(getNotDones())
     print("Starting recurring action items...")
     notdones = getNotDones()
-    createInputRecords(notdones)
-    print("Done.")
+    # print(notdones)
+    prepareInputRecords(notdones)
+    
+    
+    # #Need to refactor this in main process...
+    # weeklynotdones = []
+    # for notdone in notdones:
+    #     if notdone[3] == "W" and utils.futureExists(notdone) == False:
+    #         weeklynotdones.append(notdone)
+    #     else:
+    #         print(f"Future action already exists for recurring id: {notdone[0]}")
+    
+    # if weeklynotdones:
+    #     prepareInputRecords(weeklynotdones)
+    # print("Done.")
 
 
 if __name__ == '__main__':
     main()
-    print("Done.")

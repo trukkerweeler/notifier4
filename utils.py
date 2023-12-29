@@ -138,6 +138,20 @@ def getLastSentFile(file):
         lastSentDate = datetime.today() - timedelta(days=10)
     return lastSentDate
 
+
+def getLastSentFile0(file):
+    """Get the actual date from the last sent file."""
+    lastSentFile = file + "Lastsent.txt"
+    # print(lastSentFile)
+    if os.path.exists(lastSentFile):
+        with open(lastSentFile, "r") as f:
+            lastSentDate = f.read().split()[0]
+            lastSentDate = datetime.strptime(lastSentDate, '%Y-%m-%d')
+    else:
+        lastSentDate = datetime.today()
+    return lastSentDate
+
+
 def getNextSysid(description):
     """Get the next sysid from the database."""
     sql = "select CURRENT_ID from SYSTEM_IDS where DESCRIPTION = '{description}'".format (description=description)
@@ -210,11 +224,37 @@ def WeekLastSent(file):
     return lastSentDate
 
 
+def futureExists(rid):
+    """Check if any future actions exist."""
+    sql = (f"select * from PEOPLE_INPUT where USER_DEFINED_2 = {rid[0]} and DUE_DATE > CURRENT_DATE()")
+    alreadyDone = getDatabaseData(sql)
+    if (alreadyDone):      
+        print(f"Future action already exists(utils): {rid[0]}")
+        return True
+    else:
+        print(f"Future action does not exist(utils): {rid[0]}")
+        return False
+
+
+def week_of_month(date):
+    # Get the year, month, and day of the given date
+    year, month, day = date.year, date.month, date.day
+    # Get the week number of the year and the weekday of the given date
+    week, weekday = date.isocalendar()[1:]
+    # Get the week number of the year and the weekday of the first day of the month
+    first_week, first_weekday = date.replace(day=1).isocalendar()[1:]
+    # Calculate the week number of the month
+    return week - first_week + 1
+    
 
 if __name__ == '__main__':
     # print(getNextSysid("INPUT_ID"))
     # print(getProjectName("0000055"))
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
-    sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
+    # convert string to datetime
+    mydate = datetime.strptime('2023-12-29', '%Y-%m-%d')
+    # print(mydate)
+    print(week_of_month(mydate))

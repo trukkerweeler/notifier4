@@ -51,17 +51,23 @@ def checkDocs():
     utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 
-def main(test = 0):    
+def main(test = 0):
+    """Sends emails for document releases and obsolescenses. Checks that all documents are in the correct location."""
     if test == 1:
         print("Starting sysdoc.py in test.")
         checkDocs()
     else:
-        if utils.ranToday("sysdoc") == True:
-            userRunAgain = input("Already ran today - sysdoc.py, do you want to run again? (y/n)")
-            if userRunAgain == "y":
+        if utils.week_of_month(datetime.today()) in [2, 4]:
+            if utils.getLastSentFile0('sysdoc') < datetime.today() - timedelta(days=7):
+                print("Starting sysdoc.py...")
                 checkDocs()
-            else:
-                print("Not running again.")
+                utils.setLastSentFile('sysdoc')
+
+            # userRunAgain = input("Already ran today - sysdoc.py, do you want to run again? (y/n)")
+            # if userRunAgain == "y":
+            #     checkDocs()
+            # else:
+            #     print("Not running again.")
 
         else:  
             releaseNotifications()

@@ -11,24 +11,26 @@ def main(person):
         thisprojectopenactions = utils.getDatabaseData(
             f"""select pi.INPUT_ID, SUBJECT, ASSIGNED_TO, pi.PROJECT_ID, p.NAME, pit.INPUT_TEXT, pi.INPUT_DATE, pi.DUE_DATE 
             from PEOPLE_INPUT pi left join PROJECT p on pi.PROJECT_ID = p.PROJECT_ID left join PPL_INPT_TEXT pit on pi.INPUT_ID = pit.INPUT_ID
-            where ASSIGNED_TO = '{person}' and pi.CLOSED = 'N' and pi.PROJECT_ID = '{project[0]}' and pi.DUE_DATE < date_add(NOW(), interval 30 day)""")
+            where ASSIGNED_TO = '{person}' and pi.CLOSED = 'N' and pi.PROJECT_ID = '{project[0]}' and pi.DUE_DATE < date_add(NOW(), interval 30 day)
+            and INPUT_DATE > NOW() order by pi.DUE_DATE asc""")
         print(f"---actions---")
-        print(thisprojectopenactions[0])
-        print(len(thisprojectopenactions))
-        # eaddress = "tim.kent@ci-aviation.com"
-        eaddress = utils.emailAddress(person)
-        if thisprojectopenactions[0][4] is None:
-            emailsubject = "Open Actions - No project"
-        else:
-            emailsubject = "Open Actions - " + thisprojectopenactions[0][4]
-        emessage = ""
-        if len(thisprojectopenactions) > 0:
-            for action in thisprojectopenactions:
-                emessage += f"\n\nAction ID: {action[0]}\nRequest date: {action[6]}\nDue date: {action[7]}\nAction text:\n{action[5]}"
-        
-            # emessage += '\n\nIf any of these actions are complete, please close them out in the system.'
-            emessage += '\n\nIf any of these actions are complete, please tell the QA Manager.'
-            utils.sendMail(eaddress, subject=emailsubject, message=emessage)
+        if thisprojectopenactions:
+            print(thisprojectopenactions[0])
+            print(len(thisprojectopenactions))
+            # eaddress = "tim.kent@ci-aviation.com"
+            eaddress = utils.emailAddress(person)
+            if thisprojectopenactions[0][4] is None:
+                emailsubject = "Open Actions - No project"
+            else:
+                emailsubject = "Open Actions - " + thisprojectopenactions[0][4]
+            emessage = ""
+            if len(thisprojectopenactions) > 0:
+                for action in thisprojectopenactions:
+                    emessage += f"\n\nAction ID: {action[0]}\nRequest date: {action[6]}\nDue date: {action[7]}\nAction text:\n{action[5]}"
+            
+                # emessage += '\n\nIf any of these actions are complete, please close them out in the system.'
+                emessage += '\n\nIf any of these actions are complete, please tell the QA Manager.'
+                utils.sendMail(eaddress, subject=emailsubject, message=emessage)
 
 
 if __name__ == "__main__":

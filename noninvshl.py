@@ -66,46 +66,26 @@ def noninvshl():
     # notification += "</table><br></body></html>"    
     #Send the email
     # utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject=f"Expired Material Items", message=notification, cc_email=["tim.kent@ci-aviation.com"])
-    utils.sendMail(to_email=["ritam@ci-aviation.com", "craig@ci-aviation.com"], subject=f"Expiring Material Item: {po}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
-        
-
-        #     print(row['DESCRIPTION'][row])
-        #     if row[0] == 0:
-        #         print(row)
-        #     else:
-        #         pass
-        # print(df.columns)
-        # print(df.dtypes)
-        # print(df["DESCRIPTION"])
-        # print(df["Expiry Date"].dtypes)
-        # print(df["Expiry Date"].dt.date)
-        # print(df["Expiry Date"].dt.date[0])
-        # print(type(df["Expiry Date"].dt.date[0]))
-        # print(df["Expiry Date"].dt.date[0] - dt.date.today())
-        # print(type(df["Expiry Date"].dt.date[0] - dt.date.today()))
-        # print((df["Expiry Date"].dt.date[0] - dt.date.today()).days)
-        # print(type((df["Expiry Date"].dt.date[0] - dt.date.today()).days))
-        # print(df["Expiry Date"].dt.date[0] - dt.date.today() < dt.timedelta(days=30))
-        # print(type(df["Expiry Date"].dt.date[0] - dt.date.today() < dt.timedelta(days=30)))
-        # print(df["Expiry Date"].dt.date[0] - dt.date.today() < dt.timedelta(days=30) and df["Expiry Date"].dt.date[0] - dt.date.today() > dt.timedelta(days=0))
-
+    utils.sendMail(to_email=["ritam@ci-aviation.com", "craig@ci-aviation.com"], subject=f"Expiring Material Items: {dt.datetime.today()}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
+    
 
 def main():
-    """Read excel file and identify non-inventory items that are expiring soon."""
+    """If week of month is 1 or 3: Read excel file and identify non-inventory items that are expiring soon; Send email"""
     test=0
     print("Starting non-inventory expirations...")
-    lsdtplus10 = utils.getLastSentFile('noninvshl')
+    lsdt = utils.getLastSentFile0('noninvshl')
     # print(lsdtplus10)
     
     if test == 1:
         noninvshl()
     else:
-        if lsdtplus10 < dt.datetime.today():
+        # if days since last sent is greater than 7 and week of month is 1 or 3, send email and update last sent file
+        if lsdt < dt.datetime.today() - dt.timedelta(days=7) and utils.week_of_month(dt.datetime.today()) in [1, 3]:
             noninvshl()
             utils.setLastSentFile('noninvshl')
         else:
             print("Not sending non-inventory expirations, too soon or off-hours. Last sent +10: " + str(utils.getLastSentFile('noninvshl')) + " Current: " + str(dt.datetime.today()))
-        print("Done.")
+
 
 
 if __name__ == "__main__":

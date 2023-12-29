@@ -105,11 +105,20 @@ def issuedNotification():
 
 
 def main():
+    """Sends email to appropriate people for issue and closeout. Sends overdue email on weeks 2 and 4."""
+    #Issued
     issuedNotification()
-    # print("==========================================")
-    overdues()
-    # print("==========================================")
+    
+    #Closed
     closeout()
+
+    # Overdues
+    if utils.week_of_month(datetime.today()) in [2, 4]:
+        if utils.getLastSentFile0('corrective') < datetime.today() - timedelta(days=7):
+            overdues()
+    
+    #Update last sent
+    utils.setLastSentFile('corrective')
 
     
 
