@@ -256,5 +256,6 @@ if __name__ == '__main__':
     # print(WeekLastSent('project'))
     # convert string to datetime
     mydate = datetime.strptime('2023-12-29', '%Y-%m-%d')
+    # today = datetime.today()
     # print(mydate)
     print(week_of_month(mydate))

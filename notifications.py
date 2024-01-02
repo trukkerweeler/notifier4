@@ -1,7 +1,7 @@
 import utils
 # from email.message import EmailMessage
 from datetime import datetime, timedelta
-import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project, correctivehelper
+import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project, correctivehelper, competency
 
 
 def formatOverdueASL(overdueASL):
@@ -15,25 +15,14 @@ def formatOverdueASL(overdueASL):
     return formattedOverdueASL
 
 
-def main():
-    """Goes through tables and identifies overdue items. Sends email to appropriate people."""
-    # Training==================================================
-    sql2 = "select * from CTA_ATTENDANCE where datediff(Now(),EXPIRATION_DATE)>1;"
-    overDueTraining = utils.getDatabaseData(sql2)
-    overDueTraining = "Overdue Training: \n" + str(overDueTraining) + "\n"
-    print(overDueTraining)
-    if overDueTraining != "Overdue Training: \n[]\n":
-        utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject="Overdue Training", message=overDueTraining)
-    else:
-        print("No overdue training")
-
-
+# def main():
+    
     # Annual Quality Policy Review==(QAM 5.3))=================================
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 if __name__ == "__main__":
-    main()
+    competency.main()
     sysdocsetup.main()
     sysdocsetup.distro()
     sysdoc.main()

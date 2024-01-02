@@ -8,6 +8,11 @@ def main():
     """Goes through folders and records and creates folders for new corrective actions."""
     currentyear = datetime.datetime.today().year.__str__()
     cafileslocation = "K:\\Quality - Records\\10200C - Corrective Actions\\" + currentyear
+    
+    # if the folder does not exist, create it
+    if not os.path.exists(cafileslocation):
+        os.mkdir(cafileslocation)
+
     # get the folder list
     folderlist = os.listdir(cafileslocation)
     # print(folderlist)
