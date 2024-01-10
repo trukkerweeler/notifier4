@@ -73,6 +73,11 @@ def prepareInputRecords(notDones):
                 intwoyears = datetime.today() + timedelta(days=365*2)
                 due_date = intwoyears
                 startdate = due_date - timedelta(days=10)
+            
+            case "S":
+                due_date = datetime.today() + timedelta(weeks=27)
+                due_date = due_date.replace(day=1)
+                startdate = due_date
         
         insertRecurringRecord(startdate, due_date, subject, assto, projectid, rid, iid)
         
