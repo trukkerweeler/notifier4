@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, mysql, smtplib, ssl
 from datetime import datetime, timedelta
 
 
@@ -226,7 +226,7 @@ def WeekLastSent(file):
 
 def futureExists(rid):
     """Check if any future actions exist."""
-    sql = (f"select * from PEOPLE_INPUT where USER_DEFINED_2 = {rid[0]} and DUE_DATE > CURRENT_DATE()")
+    sql = (f"select * from PEOPLE_INPUT where USER_DEFINED_2 = {rid[0]} and DUE_DATE > NOW()")
     alreadyDone = getDatabaseData(sql)
     if (alreadyDone):      
         print(f"Future action already exists(utils): {rid[0]}")
@@ -245,6 +245,21 @@ def week_of_month(date):
     first_week, first_weekday = date.replace(day=1).isocalendar()[1:]
     # Calculate the week number of the month
     return week - first_week + 1
+
+
+def notifyCorrective(caid, stage):
+    """Insert a record into the CORRECTIVE_NOTIFY table."""
+    # print(caid)
+    # print(stage)
+    sql = f"insert into CORRECTIVE_NOTIFY (CORRECTIVE_ID, STAGE, NOTIFY_DATE) values ('{caid}', '{stage}', NOW())"
+    updateDatabaseData(sql)
+
+def getRcaRequestCount(caid, stage):
+    """Get the number of RCA requests."""
+    sql = "select count(*) from CORRECTIVE_NOTIFY where STAGE = '{stage}' and CORRECTIVE_ID = '{caid}'".format(caid=caid, stage=stage)
+    count = getDatabaseData(sql)
+    return count[0][0]
+
     
 
 if __name__ == '__main__':
@@ -258,4 +273,5 @@ if __name__ == '__main__':
     mydate = datetime.strptime('2023-12-29', '%Y-%m-%d')
     # today = datetime.today()
     # print(mydate)
+    # print(getRcaRequestCount("0001210", "C"))
     print(week_of_month(mydate))

@@ -103,11 +103,42 @@ def issuedNotification():
         insertSql = f"insert into CORRECTIVE_NOTIFY (CORRECTIVE_ID, STAGE, NOTIFY_DATE) values ('{corrid}', 'I', NOW());"
         utils.updateDatabaseData(insertSql)
 
+def rootcse():
+    test = "LIVE"
+    """Identify CA project that do not have a root cause, send email to those people."""
+    sql = "select pi.PROJECT_ID, pi.ASSIGNED_TO, pd.DESCRIPTION from PEOPLE_INPUT pi " \
+    "left join PROJ_DESC pd on pi.PROJECT_ID = pd.PROJECT_ID " \
+    "where pi.SUBJECT = 'RCA' and pi.CLOSED = 'N' "
+    records = utils.getDatabaseData(sql)
+    for row in records:
+        caid = row[0]
+        assto = row[1]
+        trend = row[2]
+        notification = f'''A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
+If you have any questions contact the quality manager. \nCorrective id: {caid} \n\nDescription: {trend} \n\n\nCount of previous requests: {utils.getRcaRequestCount(caid, "R")}'''
+        asstoemail = utils.emailAddress(assto.upper())
+        # asstoemail = emails[assto.upper()]
+        # print(f'Assigned to: {asstoemail}')
+        if test != "TEST":
+            utils.sendMail(to_email=[asstoemail], subject=f"Corrective Action Root Cause: {caid}", message=notification)
+            # remove CAR prefix from caid
+            caid = caid[3:]
+            utils.notifyCorrective(caid, "R")
+        else:
+            print(notification)
+            print(asstoemail)
+                                                                                                                                           
+
 
 def main():
     """Sends email to appropriate people for issue and closeout. Sends overdue email on weeks 2 and 4."""
     #Issued
     issuedNotification()
+
+    #root cause
+    if utils.week_of_month(datetime.today()) in [2, 4]:
+        if utils.getLastSentFile0('corrective') < datetime.today() - timedelta(days=7):
+            rootcse()
     
     #Closed
     closeout()
@@ -124,4 +155,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # rootcse()
     print("done")
