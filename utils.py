@@ -1,5 +1,7 @@
 import os, sys, mysql, smtplib, ssl
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def ranToday(script):
@@ -29,10 +31,12 @@ def getDatabaseData(sql):
     import mysql.connector
     from mysql.connector import Error
     try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                             database='quality',
-                                             user='admin',
-                                             password='A1rplane$$$')
+        import dotenv
+
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
         if connection.is_connected():
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -80,10 +84,10 @@ def updateDatabaseData(sql):
     import mysql.connector
     from mysql.connector import Error
     try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                              database='quality',
-                                              user='admin',
-                                              password='A1rplane$$$')
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
         if connection.is_connected():
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -102,10 +106,10 @@ def emailAddress(name):
     sql = f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{name}'"
     # print(sql)
     try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                              database='quality',
-                                              user='admin',
-                                              password='A1rplane$$$')
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
         if connection.is_connected():
             cursor = connection.cursor(buffered=True)
             cursor.execute(sql)

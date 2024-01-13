@@ -19,10 +19,10 @@ def insertDatabaseData(list):
     import mysql.connector
     from mysql.connector import Error
     try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                             database='quality',
-                                             user='admin',
-                                             password='A1rplane$$$')
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
         if connection.is_connected():
             cursor = connection.cursor()
             for item in list:
@@ -45,10 +45,10 @@ def updateDatabaseData(list):
     import mysql.connector
     from mysql.connector import Error
     try:
-        connection = mysql.connector.connect(host='ciqms.chgubqsqxrvz.us-east-2.rds.amazonaws.com',
-                                             database='quality',
-                                             user='admin',
-                                             password='A1rplane$$$')
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
         if connection.is_connected():
             cursor = connection.cursor()
             for item in list:
