@@ -150,7 +150,6 @@ def main():
     
     #Update last sent
     utils.setLastSentFile('corrective')
-
     
 
 if __name__ == '__main__':
