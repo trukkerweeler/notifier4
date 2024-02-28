@@ -59,11 +59,11 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
     CONTEXT = ssl.create_default_context()
     if from_email == "tim":
         USERNAME = "tim.kent@ci-aviation.com"
-        PASSWORD = "#A1rplane23"
+        PASSWORD = os.getenv('PASSWORD')
 
     else:
         USERNAME = "quality@ci-aviation.com"
-        PASSWORD = "#A1rplane2023"
+        PASSWORD = os.getenv('PASSWORDQ')
 
     msg = EmailMessage()
     msg["Subject"] = subject
@@ -264,6 +264,17 @@ def getRcaRequestCount(caid, stage):
     count = getDatabaseData(sql)
     return count[0][0]
 
+def ninedigitdate(date):
+    """Convert a date to a 9-digit number."""
+    thisdate = str(date)
+    date = thisdate.split("-")
+    return date[0] + "-" + date[1] + date[2]
+
+def sixdigitdate(date):
+    """Convert a date to a 6-digit format."""
+    thisdate = str(date)
+    date = thisdate.split("-")
+    return date[0] + "-" + date[1]
     
 
 if __name__ == '__main__':
@@ -274,8 +285,10 @@ if __name__ == '__main__':
     # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
     # convert string to datetime
-    mydate = datetime.strptime('2023-12-29', '%Y-%m-%d')
+    mydate = datetime.strptime('2023-09-29', '%Y-%m-%d')
     # today = datetime.today()
-    # print(mydate)
-    # print(getRcaRequestCount("0001210", "C"))
+    print(mydate)
+    print(getRcaRequestCount("0001210", "C"))
     print(week_of_month(mydate))
+    print(ninedigitdate('2023-09-29'))
+    print(sixdigitdate('2023-09-29'))

@@ -1,12 +1,14 @@
 import smtplib, ssl, os, re, utils
 from email.message import EmailMessage
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
 PORT = 465
 SERVER = "sh10.nethosting.com"
 CONTEXT = ssl.create_default_context()
 USERNAME = "quality@ci-aviation.com"
-PASSWORD = "#A1rplane2023"
+PASSWORD = os.getenv('PASSWORDQ')
 
 upload_list = []
 distro_list = []

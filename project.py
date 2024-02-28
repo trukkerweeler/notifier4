@@ -11,7 +11,7 @@ def main(person):
         thisprojectopenactions = utils.getDatabaseData(
             f"""select pi.INPUT_ID, SUBJECT, ASSIGNED_TO, pi.PROJECT_ID, p.NAME, pit.INPUT_TEXT, pi.INPUT_DATE, pi.DUE_DATE 
             from PEOPLE_INPUT pi left join PROJECT p on pi.PROJECT_ID = p.PROJECT_ID left join PPL_INPT_TEXT pit on pi.INPUT_ID = pit.INPUT_ID
-            where ASSIGNED_TO = '{person}' and pi.CLOSED = 'N' and pi.PROJECT_ID = '{project[0]}' and pi.DUE_DATE < date_add(NOW(), interval 30 day)
+            where ASSIGNED_TO = '{person}' and pi.CLOSED = 'N' and pi.PROJECT_ID = '{project[0]}' and pi.DUE_DATE < date_add(NOW(), interval 6 day)
             and INPUT_DATE > NOW() order by pi.DUE_DATE asc""")
         print(f"---actions---")
         if thisprojectopenactions:

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import utils
 
 # Get today's date
 due_date = datetime.today()
@@ -16,13 +17,18 @@ due_date = datetime.today()
 # print(due_date)
 
 
-# Friday
-if due_date.weekday() == 3:
-    replacement_date = due_date - timedelta(days=3)
-    due_date = replacement_date
-    print(f"Move back 3 days: {due_date}")
-# Saturday
-elif due_date.weekday() == 4:
-    replacement_date = due_date - timedelta(days=4)
-    due_date = replacement_date
-    print(f"Move back 4 days: {due_date}")
+# # Friday
+# if due_date.weekday() == 3:
+#     replacement_date = due_date - timedelta(days=3)
+#     due_date = replacement_date
+#     print(f"Move back 3 days: {due_date}")
+# # Saturday
+# elif due_date.weekday() == 4:
+#     replacement_date = due_date - timedelta(days=4)
+#     due_date = replacement_date
+#     print(f"Move back 4 days: {due_date}")
+
+
+
+
+# print todays date

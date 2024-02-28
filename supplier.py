@@ -20,7 +20,7 @@ def supplierExpirations():
 def main():
     """Goes through tables and identifies overdue supplier reviews. Sends email to TKENT. In the 4th week of the month."""
     if utils.week_of_month(datetime.today()) in [4]:
-        if utils.getLastSentFile0('supplier') < utils.today() - utils.timedelta(days=7):
+        if utils.getLastSentFile0('supplier') < datetime.now() - utils.timedelta(days=7):
             supplierExpirations()
             utils.setLastSentFile('supplier')
 
