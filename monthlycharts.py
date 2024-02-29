@@ -2,41 +2,73 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import utils
 import re
+from matplotlib.backends.backend_pdf import PdfPages
 from datetime import datetime
+from icecream import ic
+import ast
 
-def createChart(data, label, units):
+def createChart(chartdata):    
     """Creates a chart from the given data and saves it as a PDF."""
-    # Create the chart
-    plt.plot(data[0], data[1])
-    # plt.xlabel('Month')
-    plt.ylabel(units)
-    # plt.title('Trend of ' + units + ' in ' + label[1])
-    plt.title(label + ' Trend')
+    # ic(chartdata)
+    
     filedate = utils.sixdigitdate(datetime.today())
+    alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
+    alodine08file = PdfPages(alodine08base + f'\\{filedate}_Tank 08-Trend.pdf')
+    alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
+    alodine11file = PdfPages(alodine11base + f'\\{filedate}_Tank 11-Trend.pdf')
+    tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
+    tank13file = PdfPages(tank13base + f'\\{filedate}_Tank 13-Trend.pdf')
+    quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
+    quenchfile = PdfPages(quenchbase + f'\\{filedate}_Quench-Trend.pdf')
+    
+    for i in chartdata:
+        data = i
+        # ic(data)
+        units = data['type']
+        label = data['label']
+        chartlabel = data['label'] + ' - ' + units
+        
+        # Create the chart
+        plt.plot(data['x'], data['y'])
+        
+        # plt.xlabel('Month')
+        plt.ylabel(units)
+        
+        # plt.title('Trend of ' + units + ' in ' + label[1])
+        plt.title(chartlabel + ' Trend')
 
-    # Save the chart as a PDF
-    match label:
-        case 'Tank 11':
-            base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
-            ph11path = base + f'\\{filedate}_pH-Trend.pdf'
-            plt.savefig(ph11path, format='pdf')
-        case 'Tank 13':
-            base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
-            ph13path = base + f'\\{filedate}_pH-Trend.pdf'
-            plt.savefig(ph13path, format='pdf')
-        case 'Quench Tank':
-            base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
-            quenchpath = base + f'\\{filedate}_QTPC-Trend.pdf'
-            plt.savefig(quenchpath, format='pdf')
-        case _:
-            print("No match for saving Trend PDF.")
-            plt.show()
+        # Save the chart as a PDF
+        match label:
+            case 'Alodine Tank 08':
+                alodine08file.savefig(plt.gcf())
+            case 'Alodine Tank 11':
+                alodine11file.savefig(plt.gcf())
+            case 'Tank 13 Pass Citric':
+                tank13file.savefig(plt.gcf())
+            case 'Quench Tank':
+                quenchfile.savefig(plt.gcf())            
+            case _:
+                ic("No match for saving Trend PDF.")
+                plt.show()
+        
+    try:
+        alodine08file.close()
+    except:
+        pass
+    try:
+        alodine11file.close()
+    except:
+        pass
+    try:
+        tank13file.close()
+    except:
+        pass
+    try:
+        quenchfile.close()
+    except:
+        pass
 
 
-    # Show the chart (optional)
-    # plt.show()
-
-    # Close the chart
     plt.close()
 
 
@@ -45,12 +77,28 @@ def getdataset(actioncode):
     sql = f'''with myalias as (SELECT pir.*, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
     where pi.SUBJECT = '{actioncode[0]}' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01'order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
     mydata = utils.getDatabaseData(sql)
-    print(mydata)
+    # ic(mydata)
     myset = []
-    myvalues = []
+    # myvalues = []
     mymonths = []
+    arrpHv = []
+    arrmLv = []
+    arrFv = []
+    arrsv = []
+    arrpHd = []
+    arrmLd = []
+    arrFd = []
+    arrsd = []
+    arrdBv = [] # degrees Brix
+    arrdBd = []
+    mypHobj = {}
+    mymLobj = {}
+    myFobj = {}
+    mysobj = {}
+    mydBobj = {}
     for i in range(len(mydata)):
         valueonly = -1
+
         yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
         if yyyymm:
             yearmonth = yyyymm.group(0)
@@ -85,43 +133,97 @@ def getdataset(actioncode):
             mymonths.append(monthonly)
         else:
             print("No match")
-        pH = re.search(r'([0-9]\.[0-9]{1,2}[ ]*(pH|s))', mydata[i][1])
-        # if pH:
-        #     # print(pH.group(0))
-        #     # print(f"i am ph: '{pH.group(0)}'")
-        #     valueonly = pH.group(0)
-        #     valueonly = re.sub(r'pH', '', valueonly)
-        #     valueonly = re.sub(r's', '', valueonly)
-        #     try:
-        #         valueonly = float(valueonly)
-        #     except:
-        #         print("No match valueonly")
-        #     myvalues.append(valueonly)
-
-        # else:
-        #     # print("No match loose")
-        #     # print(mydata[i][0])
-        #     pHobject = re.search(r'(\{.*\})', mydata[i][1])
-        #     if pHobject:
-        #         # print(pHobject.group(0))
-        #         # convert it to a dictionary
-        #         mydict = eval(pHobject.group(0))
-        #         myvalues.append(float(mydict[actioncode[2]]))
-        #     else:
-        #         print("No match object")
         
-    # myset.append(mymonths)
-    # myset.append(myvalues)
-    # return myset
+        # use regex to match curly brace dictionary item
+        mymatch = re.search(r'({.*})', mydata[i][1])        
+        
+        # ic(mymatch)
+        if mymatch:
+            myobject = ast.literal_eval(mymatch.group(0))
+            # ic(myobject)
+            # for each unit in the action code, get the value from the dictionary
+            for j in myobject:
+                # ic(j)
+                # thisunit = myobject.keys()[0]
+                # ic(thisunit)
+                match j:
+                    case 'pH':
+                        if 'pH' in myobject:
+                            valueonly = myobject['pH']
+                            # ic(valueonly)
+                            arrpHv.append(valueonly)
+                            arrpHd.append(monthonly)
+                    case 'mL':
+                        if 'mL' in myobject:
+                            valueonly = myobject['mL']
+                            # ic(valueonly)
+                            arrmLv.append(valueonly)
+                            arrmLd.append(monthonly)
+                    case 'F':
+                        if 'F' in myobject:
+                            valueonly = myobject['F']
+                            # ic(valueonly)
+                            arrFv.append(valueonly)
+                            arrFd.append(monthonly)
+                    case 's':
+                        if 's' in myobject:
+                            valueonly = myobject['s']
+                            # ic(valueonly)
+                            arrsv.append(valueonly)
+                            arrsd.append(monthonly)
+                    case 'Brix':
+                        if 'Brix' in myobject:
+                            valueonly = myobject['Brix']
+                            # ic(valueonly)
+                            arrdBv.append(valueonly)
+                            arrdBd.append(monthonly)
+                    case _:
+                        ic("No match this unit: ", j)
+
+    # for each of the arrays if not empty, append to myset
+    if arrpHv:
+        mypHobj['label'] = actioncode[1]
+        mypHobj['type'] = 'pH'
+        mypHobj['x'] = arrpHd
+        mypHobj['y'] = arrpHv
+
+        myset.append(mypHobj)
+    if arrmLv:
+        mymLobj['label'] = actioncode[1]
+        mymLobj['type'] = 'mL'
+        mymLobj['x'] = arrmLd
+        mymLobj['y'] = arrmLv
+        myset.append(mymLobj)
+    if arrFv:
+        myFobj['label'] = actioncode[1]
+        myFobj['type'] = 'F'
+        myFobj['x'] = arrFd
+        myFobj['y'] = arrFv
+        myset.append(myFobj)
+    if arrsv:
+        mysobj['label'] = actioncode[1]
+        mysobj['type'] = 's'
+        mysobj['x'] = arrsd
+        mysobj['y'] = arrsv
+        myset.append(mysobj)
+    if arrdBv:
+        mydBobj['label'] = actioncode[1]
+        mydBobj['type'] = 'Brix'
+        mydBobj['x'] = arrdBd
+        mydBobj['y'] = arrdBv
+        myset.append(mydBobj)
+    # ic(myset)
+    return myset
 
 
 def main():
-    labels = [['08TE','Alodine Tank','mult']]
-    # labels = [['11PH','Tank 11','pH'],['13TE','Tank 13','pH'],['QTPH','Quench Tank','pH'],['08TE','Alodine Tank','mult']]
+    # labels = [['08TE','Alodine Tank',['mL','pH', 'F']],]
+    labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']]]
     for label in labels:
         mydataset = getdataset(label)
-        print(mydataset)
-        createChart(mydataset, label[1], label[2])
+        # ic(mydataset)
+        createChart(mydataset)
+        
 
 
 if __name__ == "__main__":
