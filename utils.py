@@ -275,6 +275,35 @@ def sixdigitdate(date):
     thisdate = str(date)
     date = thisdate.split("-")
     return date[0] + "-" + date[1]
+
+def threelettermonth(date):
+    """Convert a date to 3-Letter month"""
+    month = date[5:7]        
+    if month == '01':
+        threelettermonth = 'Jan-' + date[2:4]
+    elif month == '02':
+        threelettermonth = 'Feb'
+    elif month == '03':                    
+        threelettermonth = 'Mar'
+    elif month == '04':
+        threelettermonth = 'Apr'
+    elif month == '05':                    
+        threelettermonth = 'May'
+    elif month == '06':
+        threelettermonth = 'Jun'
+    elif month == '07':
+        threelettermonth = 'Jul'
+    elif month == '08':
+        threelettermonth = 'Aug'
+    elif month == '09':
+        threelettermonth = 'Sep'
+    elif month == '10':
+        threelettermonth = 'Oct'
+    elif month == '11':
+        threelettermonth = 'Nov'
+    elif month == '12':
+        threelettermonth = 'Dec'
+    return threelettermonth
     
 
 if __name__ == '__main__':

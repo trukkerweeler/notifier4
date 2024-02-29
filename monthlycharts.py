@@ -10,16 +10,30 @@ import ast
 def createChart(chartdata):    
     """Creates a chart from the given data and saves it as a PDF."""
     # ic(chartdata)
-    
+
     filedate = utils.sixdigitdate(datetime.today())
-    alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
-    alodine08file = PdfPages(alodine08base + f'\\{filedate}_Tank 08-Trend.pdf')
-    alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
-    alodine11file = PdfPages(alodine11base + f'\\{filedate}_Tank 11-Trend.pdf')
-    tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
-    tank13file = PdfPages(tank13base + f'\\{filedate}_Tank 13-Trend.pdf')
-    quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
-    quenchfile = PdfPages(quenchbase + f'\\{filedate}_Quench-Trend.pdf')
+    thischart = chartdata[0]
+    thischartlabel = thischart['label']
+
+    match thischartlabel:
+        case 'Passivation Tank 07':
+            base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank07 - Passivation-Nitric'
+            passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+        case 'Alodine Tank 08':
+            alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
+            alodine08file = PdfPages(alodine08base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+        case 'Alodine Tank 11':
+            alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
+            alodine11file = PdfPages(alodine11base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+        case 'Tank 13 Pass Citric':
+            tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
+            tank13file = PdfPages(tank13base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+        case 'Quench Tank':
+            quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
+            quenchfile = PdfPages(quenchbase + f'\\{filedate}_{thischartlabel} Trend.pdf')            
+        case _:
+            ic("No match for saving Trend PDF.")
+            plt.show()
     
     for i in chartdata:
         data = i
@@ -28,6 +42,9 @@ def createChart(chartdata):
         label = data['label']
         chartlabel = data['label'] + ' - ' + units
         
+        # Clear the plot
+        plt.clf()
+
         # Create the chart
         plt.plot(data['x'], data['y'])
         
@@ -39,6 +56,8 @@ def createChart(chartdata):
 
         # Save the chart as a PDF
         match label:
+            case 'Passivation Tank 07':
+                passivation07file.savefig(plt.gcf())
             case 'Alodine Tank 08':
                 alodine08file.savefig(plt.gcf())
             case 'Alodine Tank 11':
@@ -51,6 +70,10 @@ def createChart(chartdata):
                 ic("No match for saving Trend PDF.")
                 plt.show()
         
+    try:
+        passivation07file.close()
+    except:
+        pass
     try:
         alodine08file.close()
     except:
@@ -90,49 +113,30 @@ def getdataset(actioncode):
     arrFd = []
     arrsd = []
     arrdBv = [] # degrees Brix
+    arrPBVv = []
+    arrPBVd = []
+    arrFEv = []
+    arrFEd = []
+    
     arrdBd = []
     mypHobj = {}
     mymLobj = {}
     myFobj = {}
     mysobj = {}
     mydBobj = {}
+    myPBVobj = {}
+    myFEobj = {}
     for i in range(len(mydata)):
         valueonly = -1
 
         yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
         if yyyymm:
             yearmonth = yyyymm.group(0)
-            monthonly = yearmonth[5:]
-            # convert 2-digit month to 3-letter month            
-            if monthonly == '01':
-                monthonly = 'Jan-' + yearmonth[2:4]
-            elif monthonly == '02':
-                monthonly = 'Feb'
-            elif monthonly == '03':                    
-                monthonly = 'Mar'
-            elif monthonly == '04':
-                monthonly = 'Apr'
-            elif monthonly == '05':                    
-                monthonly = 'May'
-            elif monthonly == '06':
-                monthonly = 'Jun'
-            elif monthonly == '07':
-                monthonly = 'Jul'
-            elif monthonly == '08':
-                monthonly = 'Aug'
-            elif monthonly == '09':
-                monthonly = 'Sep'
-            elif monthonly == '10':
-                monthonly = 'Oct'
-            elif monthonly == '11':
-                monthonly = 'Nov'
-            elif monthonly == '12':
-                monthonly = 'Dec'
-            # print(monthonly)
-            pass
+            monthonly = utils.threelettermonth(yearmonth)
+            # monthonly = yearmonth[5:]
+            # if monthonly == '01':
+            #     monthonly = 'Jan' + yearmonth[2:4]
             mymonths.append(monthonly)
-        else:
-            print("No match")
         
         # use regex to match curly brace dictionary item
         mymatch = re.search(r'({.*})', mydata[i][1])        
@@ -141,6 +145,7 @@ def getdataset(actioncode):
         if mymatch:
             myobject = ast.literal_eval(mymatch.group(0))
             # ic(myobject)
+
             # for each unit in the action code, get the value from the dictionary
             for j in myobject:
                 # ic(j)
@@ -177,6 +182,18 @@ def getdataset(actioncode):
                             # ic(valueonly)
                             arrdBv.append(valueonly)
                             arrdBd.append(monthonly)
+                    case 'PBV':
+                        if 'PBV' in myobject:
+                            valueonly = myobject['PBV']
+                            # ic(valueonly)
+                            arrPBVv.append(valueonly)
+                            arrPBVd.append(monthonly)
+                    case 'Fe':
+                        if 'Fe' in myobject:
+                            valueonly = myobject['Fe']
+                            # ic(valueonly)
+                            arrFEv.append(valueonly)
+                            arrFEd.append(monthonly)
                     case _:
                         ic("No match this unit: ", j)
 
@@ -212,13 +229,26 @@ def getdataset(actioncode):
         mydBobj['x'] = arrdBd
         mydBobj['y'] = arrdBv
         myset.append(mydBobj)
+    if arrPBVv:
+        myPBVobj['label'] = actioncode[1]
+        myPBVobj['type'] = 'PBV'
+        myPBVobj['x'] = arrPBVd
+        myPBVobj['y'] = arrPBVv
+        myset.append(myPBVobj)
+    if arrFEv:
+        myFEobj['label'] = actioncode[1]
+        myFEobj['type'] = 'Fe'
+        myFEobj['x'] = arrFEd
+        myFEobj['y'] = arrFEv
+        myset.append(myFEobj)
+
     # ic(myset)
     return myset
 
 
 def main():
-    # labels = [['08TE','Alodine Tank',['mL','pH', 'F']],]
-    labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']]]
+    # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']],]
+    labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
     for label in labels:
         mydataset = getdataset(label)
         # ic(mydataset)
