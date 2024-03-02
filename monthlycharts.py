@@ -58,9 +58,6 @@ def createChart(chartdata):
     chartno = 0
     for i in chartdata:
         # ic(i)
-
-        # Clear the plot
-        # plt.clf()
         
         units = i['type']
         label = i['label']
@@ -70,7 +67,7 @@ def createChart(chartdata):
         plt.subplot(len(chartdata), 1, chartno)
         plt.plot(i['x'], i['y'])
 
-        plt.ylabel(units)
+        plt.ylabel(units, rotation=0, labelpad=20)
         
         # plt.title('Trend of ' + units + ' in ' + label[1])
         plt.title(chartlabel + ' Trend')
