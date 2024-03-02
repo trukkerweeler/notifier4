@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def getcomputername():
+    return os.getenv('COMPUTERNAME')
+
 def ranToday(script):
     match script:
         case "sysdoc":
@@ -321,3 +324,4 @@ if __name__ == '__main__':
     print(week_of_month(mydate))
     print(ninedigitdate('2023-09-29'))
     print(sixdigitdate('2023-09-29'))
+    print(getcomputername())

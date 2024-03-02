@@ -7,68 +7,92 @@ from datetime import datetime
 from icecream import ic
 import ast
 
+
 def createChart(chartdata):    
     """Creates a chart from the given data and saves it as a PDF."""
     # ic(chartdata)
-
+    thiscomputer = utils.getcomputername()
     filedate = utils.sixdigitdate(datetime.today())
     thischart = chartdata[0]
     thischartlabel = thischart['label']
 
     match thischartlabel:
         case 'Passivation Tank 07':
-            base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank07 - Passivation-Nitric'
-            passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank07 - Passivation-Nitric'
+                passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
         case 'Alodine Tank 08':
-            alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
-            alodine08file = PdfPages(alodine08base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                alodine08file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
+                alodine08file = PdfPages(alodine08base + f'\\{filedate}_{thischartlabel} Trend.pdf')
         case 'Alodine Tank 11':
-            alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
-            alodine11file = PdfPages(alodine11base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                alodine11file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
+                alodine11file = PdfPages(alodine11base + f'\\{filedate}_{thischartlabel} Trend.pdf')
         case 'Tank 13 Pass Citric':
-            tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
-            tank13file = PdfPages(tank13base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                tank13file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
+                tank13file = PdfPages(tank13base + f'\\{filedate}_{thischartlabel} Trend.pdf')
         case 'Quench Tank':
-            quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
-            quenchfile = PdfPages(quenchbase + f'\\{filedate}_{thischartlabel} Trend.pdf')            
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                quenchfile = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
+                quenchfile = PdfPages(quenchbase + f'\\{filedate}_{thischartlabel} Trend.pdf')            
         case _:
             ic("No match for saving Trend PDF.")
             plt.show()
-    
+    chartno = 0
     for i in chartdata:
-        data = i
-        # ic(data)
-        units = data['type']
-        label = data['label']
-        chartlabel = data['label'] + ' - ' + units
-        
-        # Clear the plot
-        plt.clf()
+        # ic(i)
 
-        # Create the chart
-        plt.plot(data['x'], data['y'])
+        # Clear the plot
+        # plt.clf()
         
-        # plt.xlabel('Month')
+        units = i['type']
+        label = i['label']
+        chartlabel = i['label'] + ' - ' + units
+        
+        chartno += 1
+        plt.subplot(len(chartdata), 1, chartno)
+        plt.plot(i['x'], i['y'])
+
         plt.ylabel(units)
         
         # plt.title('Trend of ' + units + ' in ' + label[1])
         plt.title(chartlabel + ' Trend')
+    
 
-        # Save the chart as a PDF
-        match label:
-            case 'Passivation Tank 07':
-                passivation07file.savefig(plt.gcf())
-            case 'Alodine Tank 08':
-                alodine08file.savefig(plt.gcf())
-            case 'Alodine Tank 11':
-                alodine11file.savefig(plt.gcf())
-            case 'Tank 13 Pass Citric':
-                tank13file.savefig(plt.gcf())
-            case 'Quench Tank':
-                quenchfile.savefig(plt.gcf())            
-            case _:
-                ic("No match for saving Trend PDF.")
-                plt.show()
+    plt.tight_layout()
+
+    # Save the chart as a PDF
+    match label:
+        case 'Passivation Tank 07':
+            passivation07file.savefig(plt.gcf())
+        case 'Alodine Tank 08':
+            alodine08file.savefig(plt.gcf())
+        case 'Alodine Tank 11':
+            alodine11file.savefig(plt.gcf())
+        case 'Tank 13 Pass Citric':
+            tank13file.savefig(plt.gcf())
+        case 'Quench Tank':
+            quenchfile.savefig(plt.gcf())            
+        case _:
+            ic("No match for saving Trend PDF.")
+            plt.show()
         
     try:
         passivation07file.close()
