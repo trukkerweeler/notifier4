@@ -53,31 +53,41 @@ def prepareInputRecords(notDones):
                     if utils.week_of_month(startdate) > 1:
                         assto = "OGULOBOVIC"
 
-            case "M":
-                # nextMonth = datetime.today() + timedelta(days=32)
-                due_date = nextMonth.replace(day=1)
-                fdonm = nextMonth.replace(day=1)    
-                startdate = fdonm
-
-            case "Q":
-                due_date = datetime.today() + timedelta(weeks=12)
-                due_date = due_date.replace(day=1)
-                startdate = due_date
-
+            # Annually
             case "A":
                 due_date = datetime.today() + timedelta(days=365)
                 due_date = due_date.replace(day=1)
                 startdate = due_date - timedelta(days=10)
 
+            # Monthly
+            case "M": 
+                # nextMonth = datetime.today() + timedelta(days=32)
+                due_date = nextMonth.replace(day=1)
+                fdonm = nextMonth.replace(day=1)    
+                startdate = fdonm
+            
+            # Every other month (Copilot says bimonthly)     
+            case "O":
+                due_date = datetime.today() + timedelta(weeks=8)
+                due_date = due_date.replace(day=1)
+                startdate = due_date
+
+            # Quarterly
+            case "Q":
+                due_date = datetime.today() + timedelta(weeks=12)
+                due_date = due_date.replace(day=1)
+                startdate = due_date            
+
+            case "S":
+                due_date = datetime.today() + timedelta(weeks=27)
+                due_date = due_date.replace(day=1)
+                startdate = due_date
+                
             case "BE":
                 intwoyears = datetime.today() + timedelta(days=365*2)
                 due_date = intwoyears
                 startdate = due_date - timedelta(days=10)
             
-            case "S":
-                due_date = datetime.today() + timedelta(weeks=27)
-                due_date = due_date.replace(day=1)
-                startdate = due_date
         
         insertRecurringRecord(startdate, due_date, subject, assto, projectid, rid, iid)
         

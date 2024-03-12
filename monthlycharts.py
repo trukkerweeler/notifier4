@@ -17,6 +17,20 @@ def createChart(chartdata):
     thischartlabel = thischart['label']
 
     match thischartlabel:
+        case 'Clean Tank 01':
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                clean01file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                clean01base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Tank01'
+                clean01file = PdfPages(clean01base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+        case 'Deox Tank 05':
+            if thiscomputer == 'DESKTOP-473QAMH':
+                base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                deox05file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+            else:
+                deox05base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank05 - Deox'
+                deox05file = PdfPages(deox05base + f'\\{filedate}_{thischartlabel} Trend.pdf')
         case 'Passivation Tank 07':
             if thiscomputer == 'DESKTOP-473QAMH':
                 base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
@@ -77,6 +91,10 @@ def createChart(chartdata):
 
     # Save the chart as a PDF
     match label:
+        case 'Clean Tank 01':
+            clean01file.savefig(f'{filedate}_{label[1]} Trend.pdf')
+        case 'Deox Tank 05':
+            deox05file.savefig(plt.gcf())            
         case 'Passivation Tank 07':
             passivation07file.savefig(plt.gcf())
         case 'Alodine Tank 08':
@@ -92,6 +110,14 @@ def createChart(chartdata):
             plt.show()
         
     try:
+        clean01file.close()
+    except:
+        pass
+    try:
+        deox05file.close()
+    except:
+        pass
+    try: 
         passivation07file.close()
     except:
         pass
@@ -138,6 +164,8 @@ def getdataset(actioncode):
     arrPBVd = []
     arrFEv = []
     arrFEd = []
+    arrPctv = []
+    arrPctd = []
     
     arrdBd = []
     mypHobj = {}
@@ -147,6 +175,8 @@ def getdataset(actioncode):
     mydBobj = {}
     myPBVobj = {}
     myFEobj = {}
+    myPctobj = {}
+
     for i in range(len(mydata)):
         valueonly = -1
 
@@ -215,6 +245,12 @@ def getdataset(actioncode):
                             # ic(valueonly)
                             arrFEv.append(valueonly)
                             arrFEd.append(monthonly)
+                    case 'Pct':
+                        if 'Pct' in myobject:
+                            valueonly = myobject['Pct']
+                            # ic(valueonly)
+                            arrPctv.append(valueonly)
+                            arrPctd.append(monthonly)
                     case _:
                         ic("No match this unit: ", j)
 
@@ -262,14 +298,26 @@ def getdataset(actioncode):
         myFEobj['x'] = arrFEd
         myFEobj['y'] = arrFEv
         myset.append(myFEobj)
+    if arrPctv:
+        myPctobj['label'] = actioncode[1]
+        myPctobj['type'] = 'Pct'
+        myPctobj['x'] = arrPctd
+        myPctobj['y'] = arrPctv
+        myset.append(myPctobj)
 
     # ic(myset)
     return myset
 
 
 def main():
-    # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']],]
-    labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
+    labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
+    # labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
+    # labels = [['QTPC','Quench Tank Polymer',['s']]]
+    # labels = [['QTPH','Quench Tank',['pH']]]
+    # labels = [['01TE','Clean Tank 01',['Pct','F']]] not yet working wait until have 2 data points
+
+    
+
     for label in labels:
         mydataset = getdataset(label)
         # ic(mydataset)

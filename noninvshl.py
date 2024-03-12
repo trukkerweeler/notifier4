@@ -1,6 +1,7 @@
 import pandas as pd
 import datetime as dt
 import utils
+import icecream as ic
 
 def noninvshl():
     # xlfile = r"C:\Users\timK\Documents\Non Inventory Expirations.xls"
@@ -17,6 +18,9 @@ def noninvshl():
         po = str(row[1]['PO'])
         while len(po) < 7:
             po = po + " "
+        # if there is a period in the po, split it and use the first part
+        if "." in po:
+            po = po.split(".")[0]
         part = str(row[1]['PART'])
         while len(part) < 20:
             part = part + " "
@@ -45,16 +49,15 @@ def noninvshl():
                 disposition = disposition + " "
         # print(f"{doe} {type(doe)}")
         if isinstance(doe, dt.datetime):
-            # print("Yep")
-            # print(f"{po} {part} {description} {lot} {dom} {doe} {disposition}")
-            # print(type(doe))
-            #convert month/day/year to year-month-day
-            # if doe == "nan":
-            #     doe = "1900-01-01 00:00:00"
-            # dtDoe = dt.datetime.strptime(str(doe), '%m/%d/%Y')
-            dtDoe = dt.datetime.strptime(str(doe), '%Y-%m-%d %H:%M:%S')
-            dtDoe = dtDoe.date()
-            # print(dtDoe)
+            try:
+                dtDoe = dt.datetime.strptime(str(doe), '%Y-%m-%d %H:%M:%S')
+                dtDoe = dtDoe.date()
+            except:
+                print(f"Error converting {doe} to date, po: {po} part: {part} description: {description} lot: {lot} dom: {dom} disposition: {disposition}")
+
+            # dtDoe = dt.datetime.strptime(str(doe), '%Y-%m-%d %H:%M:%S')
+            # dtDoe = dtDoe.date()
+            # # print(dtDoe)
 
             # print(dtDoe - dt.date.today())
 

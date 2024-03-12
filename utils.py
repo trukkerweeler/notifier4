@@ -54,7 +54,7 @@ def getDatabaseData(sql):
             connection.close()
 
 def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", cc_email="tim.kent@ci-aviation.com"):
-    print(f"Email subject to {subject} from {from_email}")
+    print(f"**Email subject to {subject} from {from_email}")
     import smtplib, ssl
     from email.message import EmailMessage
     PORT = 465
@@ -69,6 +69,7 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
         PASSWORD = os.getenv('PASSWORDQ')
 
     msg = EmailMessage()
+    # print(f"--Email subject to {subject} from {from_email}")
     msg["Subject"] = subject
     msg["From"] = USERNAME
     msg["To"] = to_email
