@@ -17,7 +17,12 @@ def Issue():
                 due = due.strftime("%m/%d/%Y")
             shortreq = reqtext.split('.')[0] + '...'
             shortreq = shortreq.replace('\n', ' ')
-            asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]
+            try:
+                asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]
+            except:
+                print(f"Error: {assto} not found in PEOPLE table")
+                asstoemail = "tim.kent@ci-aviation.com"
+
             # print(asstoemail)
             notification = '''The following action item has been assigned. Please review and take appropriate and timely action. \nAction id: %s \nRequest date: %s \nDue: %s \nRequest: %s \nProject: %s - %s\n\nIf you have any questions please contact the quality manager.''' % (inputid, inputdate, due, reqtext, projectid, projectname)
             # print(notification)

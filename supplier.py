@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 
 def supplierExpirations():
     """Identify suppliers that have expired and send email to appropriate people."""
-    
-    sql = "select s.SUPPLIER_ID, s.NAME, q.EXPIRY_DATE from SUPPLIER s left join SUPPLIER_QMS q on s.SUPPLIER_ID = q.SUPPLIER_ID where (EXPIRY_DATE < NOW() or EXPIRY_DATE is null) and s.STATUS = 'A';"
+    # sql = '''SELECT s.SUPPLIER_ID, s.NAME, MAX(q.EXPIRY_DATE) FROM SUPPLIER s LEFT JOIN SUPPLIER_QMS q ON s.SUPPLIER_ID = q.SUPPLIER_ID WHERE (q.EXPIRY_DATE < NOW() or q.EXPIRY_DATE is null) and s.STATUS = 'A';'
+    sql = '''with allsuppliers as (SELECT s.SUPPLIER_ID, s.NAME, s.STATUS as state, MAX(q.EXPIRY_DATE) as expiration FROM SUPPLIER s LEFT JOIN SUPPLIER_QMS q ON s.SUPPLIER_ID = q.SUPPLIER_ID group by s.SUPPLIER_ID) select * from allsuppliers where expiration < NOW() and state = 'A' '''
+
     
     expiredSuppliers = utils.getDatabaseData(sql)
     expiredSuppliersDisplay = "Expired suppliers: \n" + str(expiredSuppliers) + "\n"

@@ -73,6 +73,10 @@ def updateDatabaseData(list):
 # Document Audit==================================================
 def main():
     """Goes through Documents in db and adds control path to DOCS_AVAIL table"""
+    # if week of year /2  = then contineu else pass
+    if datetime.now().isocalendar()[1] % 2 != 0:
+        print("Sysdoc main: Week of year is not even, exiting")
+        return
     
     # get all documents that have been issued or revised
     #get all the folders in the control doc folder

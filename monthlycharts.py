@@ -70,6 +70,8 @@ def createChart(chartdata):
             ic("No match for saving Trend PDF.")
             plt.show()
     chartno = 0
+
+    # ic(chartdata)
     for i in chartdata:
         # ic(i)
         
@@ -166,6 +168,8 @@ def getdataset(actioncode):
     arrFEd = []
     arrPctv = []
     arrPctd = []
+    arrgd = []
+    arrgv = []
     
     arrdBd = []
     mypHobj = {}
@@ -176,6 +180,7 @@ def getdataset(actioncode):
     myPBVobj = {}
     myFEobj = {}
     myPctobj = {}
+    mygobj = {}
 
     for i in range(len(mydata)):
         valueonly = -1
@@ -203,6 +208,12 @@ def getdataset(actioncode):
                 # thisunit = myobject.keys()[0]
                 # ic(thisunit)
                 match j:
+                    case 'g':
+                        if 'g' in myobject:
+                            valueonly = myobject['g']
+                            # ic(valueonly)
+                            arrgv.append(valueonly)
+                            arrgd.append(monthonly)
                     case 'pH':
                         if 'pH' in myobject:
                             valueonly = myobject['pH']
@@ -255,6 +266,12 @@ def getdataset(actioncode):
                         ic("No match this unit: ", j)
 
     # for each of the arrays if not empty, append to myset
+    if arrgv:
+        mygobj['label'] = actioncode[1]
+        mygobj['type'] = 'g'
+        mygobj['x'] = arrgd
+        mygobj['y'] = arrgv
+        myset.append(mygobj)
     if arrpHv:
         mypHobj['label'] = actioncode[1]
         mypHobj['type'] = 'pH'
@@ -310,15 +327,15 @@ def getdataset(actioncode):
 
 
 def main():
-    labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
+    # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
     # labels = [['QTPC','Quench Tank Polymer',['s']]]
     # labels = [['QTPH','Quench Tank',['pH']]]
-    # labels = [['01TE','Clean Tank 01',['Pct','F']]] not yet working wait until have 2 data points
-
-    
+    labels = [['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
+    # labels = [['01TE','Clean Tank 01',['Pct','F']]] not yet working wait until have 2 data points 
 
     for label in labels:
+        # ic(label)
         mydataset = getdataset(label)
         # ic(mydataset)
         createChart(mydataset)

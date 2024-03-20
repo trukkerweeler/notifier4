@@ -49,7 +49,7 @@ def prepareInputRecords(notDones):
                 startdate = fdonw.strftime('%Y-%m-%d')
                 due_date = fdonw + timedelta(days=5)
                 due_date = due_date.strftime('%Y-%m-%d')
-                if subject == "QTPH":
+                if subject == "QTPC":
                     if utils.week_of_month(startdate) > 1:
                         assto = "OGULOBOVIC"
 

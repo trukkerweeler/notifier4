@@ -246,6 +246,9 @@ def futureExists(rid):
 
 def week_of_month(date):
     # Get the year, month, and day of the given date
+    # if the date argument is a string, convert it to a date object
+    if isinstance(date, str):
+        date = datetime.strptime(date, '%Y-%m-%d')
     year, month, day = date.year, date.month, date.day
     # Get the week number of the year and the weekday of the given date
     week, weekday = date.isocalendar()[1:]
