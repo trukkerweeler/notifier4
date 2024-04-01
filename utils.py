@@ -67,6 +67,9 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
     else:
         USERNAME = "quality@ci-aviation.com"
         PASSWORD = os.getenv('PASSWORDQ')
+    
+    # Replace linefeed in subject
+    subject = subject.replace("\n", " ")
 
     msg = EmailMessage()
     # print(f"--Email subject to {subject} from {from_email}")

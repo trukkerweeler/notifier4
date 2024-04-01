@@ -1,5 +1,6 @@
 import utils
 from datetime import datetime, timedelta
+from icecream import ic
 
 def Issue():
     """send email to person assigned action."""
@@ -17,6 +18,7 @@ def Issue():
                 due = due.strftime("%m/%d/%Y")
             shortreq = reqtext.split('.')[0] + '...'
             shortreq = shortreq.replace('\n', ' ')
+            shortreq = shortreq.replace('\r', ' ')
             try:
                 asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]
             except:
@@ -26,6 +28,7 @@ def Issue():
             # print(asstoemail)
             notification = '''The following action item has been assigned. Please review and take appropriate and timely action. \nAction id: %s \nRequest date: %s \nDue: %s \nRequest: %s \nProject: %s - %s\n\nIf you have any questions please contact the quality manager.''' % (inputid, inputdate, due, reqtext, projectid, projectname)
             # print(notification)
+            # ic(shortreq)
             utils.sendMail(to_email=[asstoemail], subject=f"Action Item Notification: {inputid} - {shortreq}", message=notification, from_email="tim", cc_email="tim.kent@ci-aviation.com")
 
             insertSql = f"insert into INPUTS_NOTIFY (INPUT_ID, ACTION, NOTIFIED_DATE, ASSIGNED_TO) values ('{inputid}','{status}',LOCALTIME(), '{assto}');"

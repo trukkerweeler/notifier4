@@ -1,5 +1,6 @@
 import os, utils
 from datetime import datetime, timedelta
+from icecream import ic
 
 
 def releaseNotifications():
@@ -48,6 +49,7 @@ def checkDocs():
             if not os.path.exists(row[2]):
                 # print(f"Distribution location moved?: {row[0]} - {row[2]}")
                 audit.append(row[0] + " (dist/moved?)")
+    ic(f"{len(audit)}\n\n{audit}")
     utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 
