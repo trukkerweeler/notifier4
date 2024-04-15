@@ -77,7 +77,17 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
     msg["From"] = USERNAME
     msg["To"] = to_email
     msg["Cc"] = cc_email
+    # set msg content to html
     msg.set_content(message)
+
+    # if subject  is test than add attachment
+    if subject == "test":
+        attachment = r"C:\Users\TimK\Documents\QMS\07500 Documented Information\CI-QSP-7500 Documented Information_r01.pdf"
+        with open(attachment, "rb") as f:
+            file_data = f.read()
+            file_name = f.name
+            msg.add_attachment(file_data, maintype="application", subtype="octet-stream", filename=file_name)
+
     # msg.set_default_type(display)
     server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
     server.login(USERNAME, PASSWORD)
@@ -321,14 +331,14 @@ if __name__ == '__main__':
     # print(getProjectName("0000055"))
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
-    # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
     # convert string to datetime
-    mydate = datetime.strptime('2023-09-29', '%Y-%m-%d')
-    # today = datetime.today()
-    print(mydate)
-    print(getRcaRequestCount("0001210", "C"))
-    print(week_of_month(mydate))
-    print(ninedigitdate('2023-09-29'))
-    print(sixdigitdate('2023-09-29'))
-    print(getcomputername())
+    # mydate = datetime.strptime('2023-09-29', '%Y-%m-%d')
+    # # today = datetime.today()
+    # print(mydate)
+    # print(getRcaRequestCount("0001210", "C"))
+    # print(week_of_month(mydate))
+    # print(ninedigitdate('2023-09-29'))
+    # print(sixdigitdate('2023-09-29'))
+    # print(getcomputername())
