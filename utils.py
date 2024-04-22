@@ -1,5 +1,6 @@
 import os, sys, mysql, smtplib, ssl
 from datetime import datetime, timedelta
+from icecream import ic
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -281,8 +282,10 @@ def notifyCorrective(caid, stage):
 def getRcaRequestCount(caid, stage):
     """Get the number of RCA requests."""
     sql = "select count(*) from CORRECTIVE_NOTIFY where STAGE = '{stage}' and CORRECTIVE_ID = '{caid}'".format(caid=caid, stage=stage)
+    # ic(sql)
     count = getDatabaseData(sql)
-    return count[0][0]
+    # ic(count)
+    return str(count[0][0])
 
 def ninedigitdate(date):
     """Convert a date to a 9-digit number."""
@@ -327,18 +330,19 @@ def threelettermonth(date):
     
 
 if __name__ == '__main__':
+    mydate = datetime.strptime('2023-09-29', '%Y-%m-%d')
+    mydate = datetime.today()
     # print(getNextSysid("INPUT_ID"))
     # print(getProjectName("0000055"))
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
-    sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
     # convert string to datetime
-    # mydate = datetime.strptime('2023-09-29', '%Y-%m-%d')
     # # today = datetime.today()
     # print(mydate)
-    # print(getRcaRequestCount("0001210", "C"))
-    # print(week_of_month(mydate))
+    # print(getRcaRequestCount("0001217", "R"))
+    print(week_of_month(mydate))
     # print(ninedigitdate('2023-09-29'))
     # print(sixdigitdate('2023-09-29'))
     # print(getcomputername())

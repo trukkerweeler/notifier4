@@ -1,5 +1,6 @@
 import utils, os, sys
 from datetime import datetime, timedelta
+from icecream import ic
 
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "tim.kent@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "craig@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
@@ -105,17 +106,24 @@ def issuedNotification():
 
 def rootcse():
     test = "LIVE"
+    # test = "TEST"
     """Identify CA project that do not have a root cause, send email to those people."""
     sql = "select pi.PROJECT_ID, pi.ASSIGNED_TO, pd.DESCRIPTION from PEOPLE_INPUT pi " \
     "left join PROJ_DESC pd on pi.PROJECT_ID = pd.PROJECT_ID " \
     "where pi.SUBJECT = 'RCA' and pi.CLOSED = 'N' "
     records = utils.getDatabaseData(sql)
     for row in records:
-        caid = row[0]
+        prjcaid = row[0]
+        if prjcaid[0:3] == "CAR":
+            caid = prjcaid[3:]
+        else:
+            caid = prjcaid
         assto = row[1]
         trend = row[2]
+        pcount = utils.getRcaRequestCount(caid, "R")
+        # ic(pcount)
         notification = f'''A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
-If you have any questions contact the quality manager. \nCorrective id: {caid} \n\nDescription: {trend} \n\n\nCount of previous requests: {utils.getRcaRequestCount(caid, "R")}'''
+If you have any questions contact the quality manager. \nCorrective id: {caid} \n\nDescription: {trend} \n\n\nCount of previous requests: {pcount}'''
         asstoemail = utils.emailAddress(assto.upper())
         # asstoemail = emails[assto.upper()]
         # print(f'Assigned to: {asstoemail}')
@@ -126,8 +134,7 @@ If you have any questions contact the quality manager. \nCorrective id: {caid} \
             utils.notifyCorrective(caid, "R")
         else:
             print(notification)
-            print(asstoemail)
-                                                                                                                                           
+            print(asstoemail)                                                                                                                                           
 
 
 def main():

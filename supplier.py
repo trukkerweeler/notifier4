@@ -10,7 +10,7 @@ def supplierExpirations():
     expiredSuppliers = utils.getDatabaseData(sql)
     expiredSuppliersDisplay = "Expired suppliers: \n" + str(expiredSuppliers) + "\n"
     # print(expiredSuppliersDisplay)
-    for supplierid, name, expdate in expiredSuppliers:
+    for supplierid, name, sstatus, expdate in expiredSuppliers:
         notification = '''This supplier's qms expired on %s. Please review and take appropriate action. \nSupplier id: %s, name: %s''' % (expdate, supplierid, name)
         asstoemail = "tim.kent@ci-aviation.com"
         # utils.sendMail(to_email=[asstoemail], subject=f"Corrective Action Issued: {corrid}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
