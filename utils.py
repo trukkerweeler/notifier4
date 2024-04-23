@@ -327,6 +327,47 @@ def threelettermonth(date):
     elif month == '12':
         threelettermonth = 'Dec'
     return threelettermonth
+
+def sendHtmlMail(to_email, subject, message, from_email="quality@ci-aviation.com", cc_email="tim.kent@ci-aviation.com"):
+    print(f"**Email subject to {subject} from {from_email}")
+    import smtplib, ssl
+    from email.message import EmailMessage
+    PORT = 465
+    SERVER = "sh10.nethosting.com"
+    CONTEXT = ssl.create_default_context()
+    if from_email == "tim":
+        USERNAME = "tim.kent@ci-aviation.com"
+        PASSWORD = os.getenv('PASSWORD')
+
+    else:
+        USERNAME = "quality@ci-aviation.com"
+        PASSWORD = os.getenv('PASSWORDQ')
+    
+    # Replace linefeed in subject
+    subject = subject.replace("\n", " ")
+
+    msg = EmailMessage()
+    # print(f"--Email subject to {subject} from {from_email}")
+    msg["Subject"] = subject
+    msg["From"] = USERNAME
+    msg["To"] = to_email
+    msg["Cc"] = cc_email
+    # set msg content to html
+    msg.set_content(message, subtype='html')
+
+    # if subject  is test than add attachment
+    if subject == "test":
+        attachment = r"C:\Users\TimK\Documents\QMS\07500 Documented Information\CI-QSP-7500 Documented Information_r01.pdf"
+        with open(attachment, "rb") as f:
+            file_data = f.read()
+            file_name = f.name
+            msg.add_attachment(file_data, maintype="application", subtype="octet-stream", filename=file_name)
+
+    # msg.set_default_type(display)
+    server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
+    server.login(USERNAME, PASSWORD)
+    server.send_message(msg)
+    server.quit()
     
 
 if __name__ == '__main__':

@@ -122,17 +122,22 @@ def rootcse():
         trend = row[2]
         pcount = utils.getRcaRequestCount(caid, "R")
         # ic(pcount)
-        notification = f'''A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
-If you have any questions contact the quality manager. \nCorrective id: {caid} \n\nDescription: {trend} \n\n\nCount of previous requests: {pcount}'''
+        notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
+If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {trend} </p><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality - Records/10200C - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
         asstoemail = utils.emailAddress(assto.upper())
         # asstoemail = emails[assto.upper()]
         # print(f'Assigned to: {asstoemail}')
         if test != "TEST":
-            utils.sendMail(to_email=[asstoemail], subject=f"Corrective Action Root Cause: {caid}", message=notification)
+            utils.sendHtmlMail(to_email=[asstoemail], subject=f"Corrective Action Root Cause: {caid}", message=notification)
             # remove CAR prefix from caid
             caid = caid[3:]
             utils.notifyCorrective(caid, "R")
         else:
+            # notification = "<p>This is a paragraph!</p><br><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality/10200C - Corrective Actions</a>"
+            notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
+If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {trend} </p><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality - Records/10200C - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
+        
+            utils.sendHtmlMail(to_email=['tim.kent@ci-aviation.com'], subject=f"Corrective Action Root Cause: {caid}", message=notification)
             print(notification)
             print(asstoemail)                                                                                                                                           
 

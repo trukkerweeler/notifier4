@@ -333,9 +333,9 @@ def main():
     # labels = [['03TE','Etch Tank 03',['Causticity','Al','F']]]
     # labels = [['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
-    # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
+    labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['11PH','Alodine Tank 11',['pH']]]
-    labels = [['13TE','Tank 13 Pass Citric',['pH']]]
+    # labels = [['13TE','Tank 13 Pass Citric',['pH']]]
     # labels = [['QTPC','Quench Tank Polymer',['s']]]
     # labels = [['QTPH','Quench Tank',['pH']]]
 
