@@ -352,6 +352,14 @@ def sendHtmlMail(to_email, subject, message, from_email="quality@ci-aviation.com
     msg["From"] = USERNAME
     msg["To"] = to_email
     msg["Cc"] = cc_email
+    # set the message send date to local time
+    localtime = datetime.now().strftime("%a, %d %b %Y %H:%M:%S")
+    msg["Date"] = localtime
+
+    # msg["X-Priority"] = "1"
+    # msg["X-MSMail-Priority"] = "High"
+    # msg["Importance"] = "High"
+
     # set msg content to html
     msg.set_content(message, subtype='html')
 
@@ -362,6 +370,15 @@ def sendHtmlMail(to_email, subject, message, from_email="quality@ci-aviation.com
             file_data = f.read()
             file_name = f.name
             msg.add_attachment(file_data, maintype="application", subtype="octet-stream", filename=file_name)
+    
+    # if subject is Root Cause than add attachment
+    if subject.__contains__("Root Cause"):
+        attachments = [r"K:\Quality\10200C - Corrective Action\5-why instructions.doc", r"K:\Quality\10200C - Corrective Action\5 Whys Worksheet.docx"]
+        for attachment in attachments:
+            with open(attachment, "rb") as f:
+                file_data = f.read()
+                file_name = f.name
+                msg.add_attachment(file_data, maintype="application", subtype="octet-stream", filename=file_name)
 
     # msg.set_default_type(display)
     server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
@@ -378,6 +395,7 @@ if __name__ == '__main__':
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
     # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    sendHtmlMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
     # convert string to datetime
     # # today = datetime.today()

@@ -64,10 +64,10 @@ def closeout():
             attachment = attachmentPath
         else:
             attachment = "K:\\Quality - Records\\10200C - Corrective Actions"
-        notification = '''The following corrective action has been closed. Please review and take appropriate final action(s). \n \n %s \nCorrective id: %s''' % (attachment, corrid[0])
+        notification = '''<p>The following corrective action has been closed. Please review and take appropriate final action(s). </p><br> <p>%s</p> <p>Corrective id: %s</p>''' % (attachment, corrid[0])
         # print(f"--- {corrid[0]} ---")
         # print(notification)
-        utils.sendMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
+        utils.sendHtmlMail(to_email=["tim.kent@ci-aviation.com","craig@ci-aviation.com"], subject=f"Corrective Action Closeout: {corrid[0]}", message=notification)
 
         # # print(f"attachment: {attachment}")
         # if (attachment is None):
@@ -134,7 +134,7 @@ If you have any questions please contact the quality manager.</p> <p>Corrective 
             utils.notifyCorrective(caid, "R")
         else:
             # notification = "<p>This is a paragraph!</p><br><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality/10200C - Corrective Actions</a>"
-            notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
+            notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. Helpful information on making good root cause analysis are attached. 
 If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {trend} </p><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality - Records/10200C - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
         
             utils.sendHtmlMail(to_email=['tim.kent@ci-aviation.com'], subject=f"Corrective Action Root Cause: {caid}", message=notification)
@@ -167,4 +167,5 @@ def main():
 if __name__ == '__main__':
     main()
     # rootcse()
+    # closeout()
     print("done")
