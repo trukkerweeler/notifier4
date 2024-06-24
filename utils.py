@@ -385,6 +385,13 @@ def sendHtmlMail(to_email, subject, message, from_email="quality@ci-aviation.com
     server.login(USERNAME, PASSWORD)
     server.send_message(msg)
     server.quit()
+
+
+def getJson(jsonfile):
+    import json
+    with open(jsonfile) as json_file:
+        data = json.load(json_file)
+        return data
     
 
 if __name__ == '__main__':

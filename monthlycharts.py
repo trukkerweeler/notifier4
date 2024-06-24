@@ -337,7 +337,7 @@ def main():
     # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['11PH','Alodine Tank 11',['pH']]]
     # labels = [['13TE','Tank 13 Pass Citric',['pH']]]
-    # labels = [['QTPC','Quench Tank Polymer',['s']]]
+    labels = [['QTPC','Quench Tank Polymer',['s']]]
     labels = [['QTPH','Quench Tank',['pH']]]
 
     for label in labels:
