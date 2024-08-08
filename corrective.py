@@ -1,7 +1,7 @@
 import utils, os, sys
 from datetime import datetime, timedelta
 from icecream import ic
-live = False
+live = True
 
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "tim.kent@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
 # emails = {"TKENT": "tim.kent@ci-aviation.com","CHARRISON": "craig@ci-aviation.com","CLEFTWICH": "tim.kent@ci-aviation.com"}
@@ -163,10 +163,34 @@ def main():
     
     #Update last sent
     utils.setLastSentFile('corrective')
-    
+
+
+def rootcseai():
+    '''for each project that begins with CAR, if a rootcse ai does not exist, create RCA action item for the project.'''
+    sql = "select * from PROJECT where PROJECT_ID like 'CAR%' and PROJECT_ID not in (select PROJECT_ID from PEOPLE_INPUT where SUBJECT = 'RCA')"
+    records = utils.getDatabaseData(sql)
+    # print(records)
+    for row in records:
+        prjcaid = row[0]
+        projectname = row[1]
+        assto = row[2]
+        due_date  = utils.inthismanymysqldays(14)
+        # get the next input id
+        inputid = utils.getNextSysid("INPUT_ID")
+        insertqsl = f"insert into PEOPLE_INPUT (INPUT_ID, PEOPLE_ID, PROJECT_ID, ASSIGNED_TO, INPUT_TYPE, SUBJECT, INPUT_DATE, DUE_DATE, CLOSED, CREATE_BY, CREATE_DATE) values ('{inputid}', 'TKENT', '{prjcaid}', '{assto}', 'STMT', 'RCA', NOW(), '{due_date}', 'N', 'CIQMS', NOW());"
+        ic(insertqsl)
+        utils.updateDatabaseData(insertqsl)
+        # insert the ai text
+        insertsql2 = f"insert into PPL_INPT_TEXT (INPUT_ID, INPUT_TEXT) values ('{inputid}', 'Root cause analysis for {projectname}');"
+        ic(insertsql2)
+        utils.updateDatabaseData(insertsql2)
+
+                 
+
 
 if __name__ == '__main__':
     main()
-    rootcse()
+    rootcseai()
+    # rootcse() #Seems redundant to the action item notification...
     closeout()
     print("done")

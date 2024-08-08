@@ -9,7 +9,7 @@ def main():
     currentyear = datetime.datetime.today().year.__str__()
     cafileslocation = "K:\\Quality - Records\\10200C - Corrective Actions\\" + currentyear
     
-    # if the folder does not exist, create it
+    # if the year folder does not exist, create it
     if not os.path.exists(cafileslocation):
         os.mkdir(cafileslocation)
 
@@ -32,6 +32,9 @@ def main():
             print(f"CA {caid} does not have a folder.")
             # create the folder
             folder = cafileslocation + "\\" + caid
+            catitle = utils.getcatitle(caid)
+            if catitle:
+                folder = folder + " - " + catitle
             os.mkdir(folder)
             # copy CATemplate from parent folder into new folder
             source = cafileslocation + "\\CATemplate.docx"
@@ -57,7 +60,15 @@ def main():
         #     # print(f"CA {caid} has a folder.")
         #     pass
 
+def makeproject():
+    '''Creates a project in the PROJECT table for Audit Corrective Actions.'''
+    # How to determine which require projects?
+    sql = "select * from CORRECTIVE where CLOSED = 'N' and year(CORRECTIVE_DATE) = year(curdate())"
+    opencas = utils.getDatabaseData(sql)
+    
 
 if __name__ == "__main__":
     main()
+    # create project for Audit Corrective Actions?
+    # makeproject()
 

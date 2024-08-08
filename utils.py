@@ -392,6 +392,19 @@ def getJson(jsonfile):
     with open(jsonfile) as json_file:
         data = json.load(json_file)
         return data
+
+
+def getcatitle(caid):
+    """Get the corrective action title from the database."""
+    sql = f"select TITLE from CORRECTIVE where CORRECTIVE_ID = '{caid}'"
+    # print(sql)
+    title = getDatabaseData(sql)
+    return title[0][0]
+
+def inthismanymysqldays(days):
+    """Get the date in this many days."""
+    mydate = datetime.today() + timedelta(days=days)
+    return mydate.strftime('%Y-%m-%d')
     
 
 if __name__ == '__main__':
@@ -402,7 +415,7 @@ if __name__ == '__main__':
     # print(getProjectId("0000055"))
     # print(getAttachmentPath("0001219", "corrective"))
     # sendMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
-    sendHtmlMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
+    # sendHtmlMail('tim.kent@ci-aviation.com', 'test', 'test', 'tim')
     # print(WeekLastSent('project'))
     # convert string to datetime
     # # today = datetime.today()
@@ -412,3 +425,5 @@ if __name__ == '__main__':
     # print(ninedigitdate('2023-09-29'))
     # print(sixdigitdate('2023-09-29'))
     # print(getcomputername())
+    print(getcatitle("0001239"))
+    print(inthismanymysqldays(7))

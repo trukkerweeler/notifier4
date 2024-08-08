@@ -53,32 +53,33 @@ def checkDocs():
     utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 
-def main(test = 0):
-    """Sends emails for document releases and obsolescenses. Checks that all documents are in the correct location."""
-    if test == 1:
-        print("Starting sysdoc.py in test.")
-        checkDocs()
-    else:
-        if utils.week_of_month(datetime.today()) in [2, 4]:
-            if utils.getLastSentFile0('sysdoc') < datetime.today() - timedelta(days=7):
-                print("Starting sysdoc.py...")
-                checkDocs()
-                utils.setLastSentFile('sysdoc')
-
-            # userRunAgain = input("Already ran today - sysdoc.py, do you want to run again? (y/n)")
-            # if userRunAgain == "y":
-            #     checkDocs()
-            # else:
-            #     print("Not running again.")
-
-        else:  
-            releaseNotifications()
-            checkDocs()
-
-
-if __name__ == '__main__':
-    main(test=0)
-    print("done")
+# def main(test = 0):
+test = 0
+"""Sends emails for document releases and obsolescenses. Checks that all documents are in the correct location."""
+if test == 1:
+    print("Starting sysdoc.py in test.")
+    checkDocs()
 else:
-    main(test=0)
-    print("done")
+    # if utils.week_of_month(datetime.today()) in [2, 4]:
+    #     if utils.getLastSentFile0('sysdoc') < datetime.today() - timedelta(days=7):
+    #         print("Starting sysdoc.py...")
+    checkDocs()
+    utils.setLastSentFile('sysdoc')
+
+        # userRunAgain = input("Already ran today - sysdoc.py, do you want to run again? (y/n)")
+        # if userRunAgain == "y":
+        #     checkDocs()
+        # else:
+        #     print("Not running again.")
+
+    # else:  
+    #     releaseNotifications()
+    #     checkDocs()
+
+
+# if __name__ == '__main__':
+#     main(test=0)
+#     print("done")
+# else:
+#     main(test=0)
+#     print("done")
