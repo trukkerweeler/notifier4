@@ -116,6 +116,8 @@ def updateDatabaseData(sql):
     finally:
         if (connection.is_connected()):
             connection.close()
+            connection = None
+    return
 
 
 def emailAddress(name):

@@ -1,38 +1,48 @@
 import utils
 from datetime import datetime, timedelta
 from icecream import ic
+import datetime
 
 def Issue():
     """send email to person assigned action."""
-    sql3 = "select pi.PROJECT_ID, p.NAME, pi.INPUT_ID, INPUT_DATE, PEOPLE_ID, INPUT_TYPE, SUBJECT, pi.ASSIGNED_TO, pi.DUE_DATE, pi.CLOSED, pi.CLOSED_DATE, pit.INPUT_TEXT, ni.NOTIFIED_DATE from PEOPLE_INPUT pi left join INPUTS_NOTIFY ni on pi.INPUT_ID = ni.INPUT_ID left join PPL_INPT_TEXT pit on pi.INPUT_ID = pit.INPUT_ID left join PROJECT p on pi.PROJECT_ID = p.PROJECT_ID where ni.NOTIFIED_DATE is null and pi.CLOSED = 'N' and pi.INPUT_DATE < NOW();"
-    noNotifications = utils.getDatabaseData(sql3)
-    noNotificationsDisplay = "Action notifications: \n" + str(noNotifications) + "\n"
-    # print(noNotificationsDisplay)
+    # Check if it's a weekday
+    if datetime.datetime.now().weekday() < 5 and datetime.datetime.now().hour >= 7 and datetime.datetime.now().hour < 17:
+        sql3 = "select pi.PROJECT_ID, p.NAME, pi.INPUT_ID, INPUT_DATE, PEOPLE_ID, INPUT_TYPE, SUBJECT, pi.ASSIGNED_TO, pi.DUE_DATE, pi.CLOSED, pi.CLOSED_DATE, pit.INPUT_TEXT, ni.NOTIFIED_DATE from PEOPLE_INPUT pi left join INPUTS_NOTIFY ni on pi.INPUT_ID = ni.INPUT_ID left join PPL_INPT_TEXT pit on pi.INPUT_ID = pit.INPUT_ID left join PROJECT p on pi.PROJECT_ID = p.PROJECT_ID where ni.NOTIFIED_DATE is null and pi.CLOSED = 'N' and pi.INPUT_DATE < NOW();"
+        noNotifications = utils.getDatabaseData(sql3)
+        # noNotificationsDisplay = "Action notifications: \n" + str(noNotifications) + "\n"
+        # ic(noNotificationsDisplay)
 
-    # match 
-    status = 'I' #Issued
-    for projectid, projectname,inputid, inputdate, reqby, inptype, subject, assto, due, closed, closedate, reqtext, notifiedDate in noNotifications:
-        if notifiedDate == None:
-            inputdate = inputdate.strftime("%m/%d/%Y")
-            if due != None:
-                due = due.strftime("%m/%d/%Y")
-            shortreq = reqtext.split('.')[0] + '...'
-            shortreq = shortreq.replace('\n', ' ')
-            shortreq = shortreq.replace('\r', ' ')
-            try:
-                asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]
-            except:
-                print(f"Error: {assto} not found in PEOPLE table")
-                asstoemail = "tim.kent@ci-aviation.com"
+        # match 
+        status = 'I' #Issued
+        for projectid, projectname,inputid, inputdate, reqby, inptype, subject, assto, due, closed, closedate, reqtext, notifiedDate in noNotifications:
+            if notifiedDate == None:
+                inputdate = inputdate.strftime("%m/%d/%Y")
+                if due != None:
+                    due = due.strftime("%m/%d/%Y")
+                shortreq = reqtext.split('.')[0] + '...'
+                shortreq = shortreq.replace('\n', ' ')
+                shortreq = shortreq.replace('\r', ' ')
+                try:
+                    if subject in ['01TE','QTPC', 'QTPH', '11PH', '13TE']:
+                        asstoemail = "victoria.r@ci-aviation.com"
+                    else:
+                        asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]
+                except:
+                    print(f"Error: {assto} not found in PEOPLE table")
+                    asstoemail = "tim.kent@ci-aviation.com"
 
-            # print(asstoemail)
-            notification = '''The following action item has been assigned. Please review and take appropriate and timely action. \nAction id: %s \nRequest date: %s \nDue: %s \nRequest: %s \nProject: %s - %s\n\nIf you have any questions please contact the quality manager.''' % (inputid, inputdate, due, reqtext, projectid, projectname)
-            # print(notification)
-            # ic(shortreq)
-            utils.sendMail(to_email=[asstoemail], subject=f"Action Item Notification: {inputid} - {shortreq}", message=notification, from_email="tim", cc_email="tim.kent@ci-aviation.com")
+                # print(asstoemail)
+                notification = '''The following action item has been assigned. Please review and take appropriate and timely action. \nAction id: %s \nRequest date: %s \nDue: %s \nRequest: %s \nProject: %s - %s\nAssigned to: %s\n\nIf you have any questions please contact the quality manager.''' % (inputid, inputdate, due, reqtext, projectid, projectname, assto)
+                # print(notification)
+                # ic(shortreq)
+                utils.sendMail(to_email=[asstoemail], subject=f"Action Item Notification: {inputid} - {shortreq}", message=notification, from_email="tim", cc_email="tim.kent@ci-aviation.com")
 
-            insertSql = f"insert into INPUTS_NOTIFY (INPUT_ID, ACTION, NOTIFIED_DATE, ASSIGNED_TO) values ('{inputid}','{status}',LOCALTIME(), '{assto}');"
-            utils.updateDatabaseData(insertSql)
+                insertSql = f"insert into INPUTS_NOTIFY (INPUT_ID, ACTION, NOTIFIED_DATE, ASSIGNED_TO) values ('{inputid}','{status}',LOCALTIME(), '{assto}');"
+                utils.updateDatabaseData(insertSql)
+    else:
+        # Break and exit the function
+        return
+    
 
 
 def Reminder():
@@ -84,4 +94,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    print("done")
+    print("input main done")

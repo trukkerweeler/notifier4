@@ -51,7 +51,7 @@ def prepareInputRecords(notDones):
                 due_date = due_date.strftime('%Y-%m-%d')
                 if subject == "QTPC":
                     if utils.week_of_month(startdate) > 1:
-                        assto = "OGULOBOVIC"
+                        assto = "OGOLUBOVIC"
 
             # Annually
             case "A":
