@@ -148,9 +148,10 @@ def createChart(chartdata):
 def getdataset(actioncode):
     """Returns a dataset for the given action code."""
     sql = f'''with myalias as (SELECT pir.*, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
-    where pi.SUBJECT = '{actioncode[0]}' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01'order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
+    where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
+    ic(sql)
     mydata = utils.getDatabaseData(sql)
-    # ic(mydata)
+    ic(mydata)
     myset = []
     # myvalues = []
     mymonths = []
@@ -190,9 +191,6 @@ def getdataset(actioncode):
         if yyyymm:
             yearmonth = yyyymm.group(0)
             monthonly = utils.threelettermonth(yearmonth)
-            # monthonly = yearmonth[5:]
-            # if monthonly == '01':
-            #     monthonly = 'Jan' + yearmonth[2:4]
             mymonths.append(monthonly)
         
         # use regex to match curly brace dictionary item
@@ -330,7 +328,7 @@ def getdataset(actioncode):
 def main():
     # labels = [['01TE','Clean Tank 01',['Pct','F']],['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']],['11PH','Alodine Tank 11',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
     # labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
-    labels = [['01TE','Clean Tank 01',['Pct','F']]] 
+    # labels = [['01TE','Clean Tank 01',['Pct','F']]] 
     # labels = [['03TE','Etch Tank 03',['Causticity','Al','F']]]
     # labels = [['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
@@ -338,14 +336,13 @@ def main():
     # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['11PH','Alodine Tank 11',['pH']]]
     # labels = [['13TE','Tank 13 Pass Citric',['pH']]]
-    # labels = [['QTPC','Quench Tank Polymer',['s']]]
-    # labels = [['QTPH','Quench Tank',['pH']]]
+    labels = [['QTPC','Quench Tank Polymer',['s']]]
 
     for label in labels:
-        # ic(label)
+        ic(label)
         mydataset = getdataset(label)
-        # ic(mydataset)
-        createChart(mydataset)
+        ic(mydataset)
+        # createChart(mydataset)
         
 
 

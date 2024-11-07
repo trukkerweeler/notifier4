@@ -121,6 +121,9 @@ def rootcse():
             caid = prjcaid
         assto = row[1]
         projectname = row[2]
+        # prepend the caid with zeros until it is 7 characters long
+        while len(caid) < 7:
+            caid = "0" + caid
         pcount = utils.getRcaRequestCount(caid, "R")
         # ic(pcount)
         notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 

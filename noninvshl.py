@@ -69,7 +69,11 @@ def noninvshl():
     # notification += "</table><br></body></html>"    
     #Send the email
     # utils.sendMail(to_email=["tim.kent@ci-aviation.com"], subject=f"Expired Material Items", message=notification, cc_email=["tim.kent@ci-aviation.com"])
-    utils.sendMail(to_email=["ritam@ci-aviation.com", "craig@ci-aviation.com"], subject=f"Expiring Material Items: {dt.datetime.today()}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
+    # create datetime object for today remove the time
+    mydate = dt.datetime.today()
+    mydate = mydate.date()
+
+    utils.sendMail(to_email=["ritam@ci-aviation.com", "craig@ci-aviation.com"], subject=f"Expiring Material Items: {mydate}", message=notification, cc_email=["tim.kent@ci-aviation.com"])
     
 
 def main():

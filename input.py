@@ -23,7 +23,7 @@ def Issue():
                 shortreq = shortreq.replace('\n', ' ')
                 shortreq = shortreq.replace('\r', ' ')
                 try:
-                    if subject in ['01TE','QTPC', 'QTPH', '11PH', '13TE']:
+                    if subject in ['01TE','QTPC', 'QTPH', '05TE', '07TE', '08TE', '11PH', '13TE', 'PM02', 'PM03', 'PM04', 'PM05', 'PM06', 'PM07', 'PM09', 'PM10', 'PM11', 'PM12', 'PM13', 'PM17', 'PM18', 'PM20', 'PM23', 'PM25', 'PM26' ] or 'F8511-2 C' in reqtext:
                         asstoemail = "victoria.r@ci-aviation.com"
                     else:
                         asstoemail = utils.getDatabaseData(f"select WORK_EMAIL_ADDRESS from PEOPLE where PEOPLE_ID = '{assto}'")[0][0]

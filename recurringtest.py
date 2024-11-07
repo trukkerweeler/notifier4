@@ -133,8 +133,6 @@ def insertRecurringRecord(startdate, duedate, subject, assto, projectid, rid, ii
     text = utils.getDatabaseData(f"select INPUT_TEXT from PPL_INPT_TEXT where INPUT_ID = '{iid}'")
     text = text[0][0]
     text = text.replace("'", "\\'")
-    # replace the backslashes with double backslashes
-    text = text.replace('\\', '\\\\')
     updateSql = f"insert into PPL_INPT_TEXT values ('{nid}', '{text}')"
     utils.updateDatabaseData(updateSql)
 
@@ -142,24 +140,11 @@ def insertRecurringRecord(startdate, duedate, subject, assto, projectid, rid, ii
 def main():
     """Goes through tables and identifies recurring items w/o future action. Creates PPL_INPT record for those."""
     # print(getNotDones())
-    print("Starting recurring action items...")
+    # print("Starting recurring action items...")
     notdones = getNotDones()
-    # print(notdones)
-    prepareInputRecords(notdones)
+    print(notdones)
+    # prepareInputRecords(notdones)
     
-    
-    # #Need to refactor this in main process...
-    # weeklynotdones = []
-    # for notdone in notdones:
-    #     if notdone[3] == "W" and utils.futureExists(notdone) == False:
-    #         weeklynotdones.append(notdone)
-    #     else:
-    #         print(f"Future action already exists for recurring id: {notdone[0]}")
-    
-    # if weeklynotdones:
-    #     prepareInputRecords(weeklynotdones)
-    # print("Done.")
-
 
 if __name__ == '__main__':
     main()

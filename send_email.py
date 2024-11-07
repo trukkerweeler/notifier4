@@ -1,11 +1,14 @@
-import smtplib
+import smtplib, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def send_email():
     sender_email = "quality@ci-aviation.com"
     receiver_email = "tim.kent@ci-aviation.com"
-    password = "#A1rplane2023"
+    password = os.getenv("PASSWORDQ")
 
     # Create the email
     msg = MIMEMultipart()

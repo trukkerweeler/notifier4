@@ -4,6 +4,11 @@ import utils
 # Get today's date
 due_date = datetime.today()
 
+# If its a weekday
+if due_date.weekday() <= 4:
+    # Print the date
+    print(f"Sysdoc release notification: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
 # # Add 2 years to today's date
 # two_years_later = today + timedelta(days=365*2)
 

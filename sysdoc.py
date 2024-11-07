@@ -55,7 +55,7 @@ def checkDocs():
                 # print(f"Distribution location moved?: {row[0]} - {row[2]}")
                 audit.append(row[0] + " (dist/moved?)")
     ic(f"{len(audit)}\n\n{audit}")
-    utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
+    utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 
 def main(test = 0):
@@ -78,12 +78,14 @@ def main(test = 0):
 
         else:  
             releaseNotifications()
-            checkDocs()
+            # checkDocs()
 
 
 if __name__ == '__main__':
     main(test=0)
     print("sysdoc main done")
+    # utils.setLastSentFile('sysdoc')
+    # print(utils.getLastSentFile0('sysdoc'))
 else:
     main(test=0)
     print("sysdoc else done")

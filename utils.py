@@ -81,13 +81,18 @@ def sendMail(to_email, subject, message, from_email="quality@ci-aviation.com", c
     # set msg content to html
     msg.set_content(message)
 
-    # if subject  is test than add attachment
+    # if subject is test than add attachment
     if subject == "test":
         attachment = r"C:\Users\TimK\Documents\QMS\07500 Documented Information\CI-QSP-7500 Documented Information_r01.pdf"
         with open(attachment, "rb") as f:
             file_data = f.read()
             file_name = f.name
             msg.add_attachment(file_data, maintype="application", subtype="octet-stream", filename=file_name)
+    
+    # iterate through message fields and log to console
+    # for key in msg.keys():
+        # print(f"{key}: {msg[key]}")
+
 
     # msg.set_default_type(display)
     server = smtplib.SMTP_SSL(SERVER, PORT, context=CONTEXT)
@@ -422,10 +427,10 @@ if __name__ == '__main__':
     # convert string to datetime
     # # today = datetime.today()
     # print(mydate)
-    # print(getRcaRequestCount("0001217", "R"))
+    print(getRcaRequestCount("0001237", "R"))
     print(week_of_month(mydate))
     # print(ninedigitdate('2023-09-29'))
     # print(sixdigitdate('2023-09-29'))
     # print(getcomputername())
-    print(getcatitle("0001239"))
-    print(inthismanymysqldays(7))
+    # print(getcatitle("0001239"))
+    # print(inthismanymysqldays(7))
