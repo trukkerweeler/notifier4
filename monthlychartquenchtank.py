@@ -6,6 +6,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 from datetime import datetime
 from icecream import ic
 import ast
+maxperiod = 0
+
 
 
 def createChart(chartdata):    
@@ -18,90 +20,114 @@ def createChart(chartdata):
         thischart = i[0]
         thischartlabel = thischart['label']
 
-        match thischartlabel:
-            case 'Clean Tank 01':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    clean01file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    clean01base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Tank01'
-                    clean01file = PdfPages(clean01base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Deox Tank 05':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    deox05file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    deox05base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank05 - Deox'
-                    deox05file = PdfPages(deox05base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Passivation Tank 07':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank07 - Passivation-Nitric'
-                    passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Alodine Tank 08':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    alodine08file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
-                    alodine08file = PdfPages(alodine08base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Alodine Tank 11':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    alodine11file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
-                    alodine11file = PdfPages(alodine11base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Tank 13 Pass Citric':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    tank13file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
-                    tank13file = PdfPages(tank13base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-            case 'Quench Tank Polymer':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    quenchfile1 = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
-                    quenchfile1 = PdfPages(quenchbase + f'\\{filedate}_{thischartlabel} Trend.pdf')      
-            case 'Quench Tank pH':
-                if thiscomputer == 'DESKTOP-473QAMH':
-                    base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
-                    quenchfile2 = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
-                else:
-                    quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
-                    quenchfile2 = PdfPages(quenchbase + f'\\{filedate}_{thischartlabel} Trend.pdf')       
-            case _:
-                ic("No match for saving Trend PDF.")
-                plt.show()
-        chartno = 0
+        try:
+            base
+        except NameError:
+            match thischartlabel:
+                case 'Clean Tank 01':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        clean01file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        clean01base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Tank01'
+                        clean01file = PdfPages(clean01base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Deox Tank 05':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        deox05file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        deox05base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank05 - Deox'
+                        deox05file = PdfPages(deox05base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Passivation Tank 07':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank07 - Passivation-Nitric'
+                        passivation07file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Alodine Tank 08':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        alodine08file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        alodine08base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank08 - Type1'
+                        alodine08file = PdfPages(alodine08base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Alodine Tank 11':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        alodine11file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        alodine11base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Chem Film\Tank11 - Type2'
+                        alodine11file = PdfPages(alodine11base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Tank 13 Pass Citric':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        tank13file = PdfPages(base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                    else:
+                        tank13base = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Passivation\Tank13 - Passivation-Citric'
+                        tank13file = PdfPages(tank13base + f'\\{filedate}_{thischartlabel} Trend.pdf')
+                case 'Quench Tank Polymer':
+                    if thiscomputer == 'DESKTOP-473QAMH':
+                        base = r'C:\Users\tim\OneDrive\Documents\Python\charts'
+                        quenchfile = PdfPages(base + f'\\{filedate}_Quench Tank Trend.pdf')
+                    else:
+                        quenchbase = r'K:\Quality - Records\8512 - Validation and Control of Special Processes\Heat Treat\Quench Tank'
+                        quenchfile = PdfPages(quenchbase + f'\\{filedate}_Quench Tank Trend.pdf')      
+                   
+                case _:
+                    ic("No match for saving Trend PDF.")
+                    plt.show()
 
-    # ic("====================================")
-    # ic(chartdata)
 
+    chartno = 0
     for j in chartdata:
+        chartno += 1
         mychart = j[0]
         chartlabel = mychart['label']
         units = mychart['type']
         xranges = mychart['x']
         yvalues = mychart['y']
-        ic(chartlabel, units, xranges, yvalues)        
-        
-        chartno += 1
-        plt.subplot(len(chartdata), 1, chartno)
-        plt.plot(mychart['x'], mychart['y'])
+        ic(chartno, chartlabel, units, xranges, yvalues)
 
-        plt.ylabel(units, rotation=0, labelpad=20)
+        # Create subplots
+        fig, axs = plt.subplots(len(chartdata), 1, figsize=(10, 5 * len(chartdata)))
         
-        # plt.title('Trend of ' + units + ' in ' + label[1])
-        plt.title(chartlabel + ' Trend')
+        # This works for the case of a single chart...
+        # fig.text(0.5, 0.04, 'XXXXX', ha='center')
+        
+        if len(chartdata) == 1:
+            axs = [axs]  # Ensure axs is iterable when there's only one subplot
+
+        for idx, ax in enumerate(axs):
+            mychart = chartdata[idx][0]
+            chartlabel = mychart['label']
+            units = mychart['type']
+            xranges = mychart['x']
+            yvalues = mychart['y']
+
+            # # Add text to the chart
+            # for x, y in zip(xranges, yvalues):
+            #     ax.text(x, y, f'{y:.2f}', fontsize=9, ha='right')
+          
+            ax.plot(xranges, yvalues, marker='o')
+            ax.set_title(f'{chartlabel}')
+            # Add textboxes to the chart
+            # for x, y in zip(xranges, yvalues):
+            # ax.text(0.5, .04, 'test', fontsize=9, ha='right')
+
+            if 'Quench Tank Polymer' in chartlabel:
+                ax.set_xlabel('Week')
+                ax.text(maxperiod-30, 15.75, 'Polymer Limits: 15-18', style='italic', bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 10})
+                # fig.text(0.5, 0.04, 'Polymer Limits: 15-18 | pH limits: 7.5-9.2', ha='center')
+            else :
+                ax.set_xlabel('Month')
+                ax.text(0.60, 8.92, 'pH Limits: 7.5-9.2', style='italic', bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 10})
+            
+            ax.set_ylabel(units)
+            ax.grid(True)
+        
     
 
-        plt.tight_layout()
 
         # Save the chart as a PDF
         match chartlabel:
@@ -119,9 +145,11 @@ def createChart(chartdata):
             case 'Tank 13 Pass Citric':
                 tank13file.savefig(plt.gcf())
             case 'Quench Tank Polymer':
-                quenchfile1.savefig(plt.gcf())       
+                quenchfile.savefig(plt.gcf())       
             case 'Quench Tank pH':
-                quenchfile2.savefig(plt.gcf())       
+                # Add sample text to the current figure
+                plt.text(0.5, 0.5, 'Hello World', fontsize=12)  
+                quenchfile.savefig(plt.gcf())       
             case _:
                 ic("No match for saving Trend PDF.")
                 plt.show()
@@ -151,11 +179,7 @@ def createChart(chartdata):
         except:
             pass
         try:
-            quenchfile1.close()
-        except:
-            pass
-        try:
-            quenchfile2.close()
+            quenchfile.close()
         except:
             pass
 
@@ -164,14 +188,20 @@ def createChart(chartdata):
 
 def getdataset(actioncode):
     """Returns a dataset for the given action code."""
-    sql = f'''with myalias as (SELECT pir.*, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
-    where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
-    # ic(sql)
+    match actioncode[0]:
+        case 'QTPC': #Weekly
+            sql = f'''with myalias as (SELECT pir.*, WEEK(pi.CREATE_DATE, 1) as week_of_year FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
+            where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by week_of_year desc limit 26 ) select * from myalias order by week_of_year asc;'''
+        case _:
+             sql = f'''with myalias as (SELECT pir.*, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
+            where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
+
+        # ic(sql)
     mydata = utils.getDatabaseData(sql)
     # ic(mydata)
     myset = []
     # myvalues = []
-    mymonths = []
+    myperiod = []
     arrpHv = []
     arrmLv = []
     arrFv = []
@@ -204,11 +234,34 @@ def getdataset(actioncode):
     for i in range(len(mydata)):
         valueonly = -1
 
-        yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
-        if yyyymm:
-            yearmonth = yyyymm.group(0)
-            monthonly = utils.threelettermonth(yearmonth)
-            mymonths.append(monthonly)
+        if 'QTPH' in actioncode[0]:
+            # ic(mydata[i][1])
+            yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
+            if yyyymm:
+                yearmonth = yyyymm.group(0)
+                period = utils.threelettermonth(yearmonth)
+                myperiod.append(period)
+        else:
+            mydate = re.search(r'(\d+-\d+-\d+)', mydata[i][1])
+            ic(mydate)
+            if mydate:
+                # convert date to week number
+                period = utils.weekofyear(mydate.group(0))
+                myperiod.append(period)
+                # determine greatest period for the x-axis set maxperiod as the global variable
+                global maxperiod
+                if period > maxperiod:
+                    maxperiod = period
+
+            
+        
+        # # use regex to match curly brace dictionary in the response
+        # yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
+        # # ic(yyyymm)
+        # if yyyymm:
+        #     yearmonth = yyyymm.group(0)
+        #     period = utils.threelettermonth(yearmonth)
+        #     myperiod.append(period)
         
         # use regex to match curly brace dictionary item
         mymatch = re.search(r'({.*})', mydata[i][1])        
@@ -229,55 +282,55 @@ def getdataset(actioncode):
                             valueonly = myobject['g']
                             # ic(valueonly)
                             arrgv.append(valueonly)
-                            arrgd.append(monthonly)
+                            arrgd.append(period)
                     case 'pH':
                         if 'pH' in myobject:
                             valueonly = myobject['pH']
                             # ic(valueonly)
                             arrpHv.append(valueonly)
-                            arrpHd.append(monthonly)
+                            arrpHd.append(period)
                     case 'mL':
                         if 'mL' in myobject:
                             valueonly = myobject['mL']
                             # ic(valueonly)
                             arrmLv.append(valueonly)
-                            arrmLd.append(monthonly)
+                            arrmLd.append(period)
                     case 'F':
                         if 'F' in myobject:
                             valueonly = myobject['F']
                             # ic(valueonly)
                             arrFv.append(valueonly)
-                            arrFd.append(monthonly)
+                            arrFd.append(period)
                     case 's':
                         if 's' in myobject:
                             valueonly = myobject['s']
                             # ic(valueonly)
                             arrsv.append(valueonly)
-                            arrsd.append(monthonly)
+                            arrsd.append(period)
                     case 'Brix':
                         if 'Brix' in myobject:
                             valueonly = myobject['Brix']
                             # ic(valueonly)
                             arrdBv.append(valueonly)
-                            arrdBd.append(monthonly)
+                            arrdBd.append(period)
                     case 'PBV':
                         if 'PBV' in myobject:
                             valueonly = myobject['PBV']
                             # ic(valueonly)
                             arrPBVv.append(valueonly)
-                            arrPBVd.append(monthonly)
+                            arrPBVd.append(period)
                     case 'Fe':
                         if 'Fe' in myobject:
                             valueonly = myobject['Fe']
                             # ic(valueonly)
                             arrFEv.append(valueonly)
-                            arrFEd.append(monthonly)
+                            arrFEd.append(period)
                     case 'Pct':
                         if 'Pct' in myobject:
                             valueonly = myobject['Pct']
                             # ic(valueonly)
                             arrPctv.append(valueonly)
-                            arrPctd.append(monthonly)
+                            arrPctd.append(period)
                     case _:
                         ic("No match this unit: ", j)
 
@@ -345,6 +398,7 @@ def getdataset(actioncode):
 def main():
     # labels = [['QTP','Quench Tank',['pH', 's']]]
     labels = ['QTPC','QTPH']
+    # labels = ['QTPC']
     datasets = []
 
     for label in labels:

@@ -278,6 +278,11 @@ def week_of_month(date):
     # Calculate the week number of the month
     return week - first_week + 1
 
+def weekofyear(mydate):
+    weekofyeardate = datetime.strptime(mydate, '%Y-%m-%d')
+    return weekofyeardate.isocalendar()[1]
+
+
 
 def notifyCorrective(caid, stage):
     """Insert a record into the CORRECTIVE_NOTIFY table."""
@@ -427,10 +432,11 @@ if __name__ == '__main__':
     # convert string to datetime
     # # today = datetime.today()
     # print(mydate)
-    print(getRcaRequestCount("0001237", "R"))
-    print(week_of_month(mydate))
+    # print(getRcaRequestCount("0001237", "R"))
+    # print(week_of_month(mydate))
     # print(ninedigitdate('2023-09-29'))
     # print(sixdigitdate('2023-09-29'))
     # print(getcomputername())
     # print(getcatitle("0001239"))
     # print(inthismanymysqldays(7))
+    print(weekofyear('2024-06-06'))
