@@ -8,8 +8,6 @@ from icecream import ic
 import ast
 maxperiod = 0
 
-
-
 def createChart(chartdata):    
     """Creates a chart from the given data and saves it as a PDF."""
     # ic(chartdata)
@@ -87,7 +85,7 @@ def createChart(chartdata):
         units = mychart['type']
         xranges = mychart['x']
         yvalues = mychart['y']
-        ic(chartno, chartlabel, units, xranges, yvalues)
+        # ic(chartno, chartlabel, units, xranges, yvalues)
 
         # Create subplots
         fig, axs = plt.subplots(len(chartdata), 1, figsize=(10, 5 * len(chartdata)))
@@ -104,16 +102,9 @@ def createChart(chartdata):
             units = mychart['type']
             xranges = mychart['x']
             yvalues = mychart['y']
-
-            # # Add text to the chart
-            # for x, y in zip(xranges, yvalues):
-            #     ax.text(x, y, f'{y:.2f}', fontsize=9, ha='right')
           
             ax.plot(xranges, yvalues, marker='o')
             ax.set_title(f'{chartlabel}')
-            # Add textboxes to the chart
-            # for x, y in zip(xranges, yvalues):
-            # ax.text(0.5, .04, 'test', fontsize=9, ha='right')
 
             if 'Quench Tank Polymer' in chartlabel:
                 ax.set_xlabel('Week')
@@ -125,9 +116,6 @@ def createChart(chartdata):
             
             ax.set_ylabel(units)
             ax.grid(True)
-        
-    
-
 
         # Save the chart as a PDF
         match chartlabel:
@@ -145,11 +133,18 @@ def createChart(chartdata):
             case 'Tank 13 Pass Citric':
                 tank13file.savefig(plt.gcf())
             case 'Quench Tank Polymer':
-                quenchfile.savefig(plt.gcf())       
+                plt.ylim(13, 18)
+                quenchfile.savefig(plt.gcf(), orientation='landscape')       
             case 'Quench Tank pH':
                 # Add sample text to the current figure
                 plt.text(0.5, 0.5, 'Hello World', fontsize=12)  
-                quenchfile.savefig(plt.gcf())       
+                plt.ylim(7.5, 9.2)
+                quenchfile.savefig(plt.gcf(), orientation='landscape')  
+            case 'Quench Tank':
+                # Add sample text to the current figure
+                plt.text(0.5, 0.5, 'Hello World', fontsize=12)  
+                quenchfile.savefig(plt.gcf(), orientation='landscape')  
+                    #  set the y-axis limits
             case _:
                 ic("No match for saving Trend PDF.")
                 plt.show()
@@ -190,15 +185,15 @@ def getdataset(actioncode):
     """Returns a dataset for the given action code."""
     match actioncode[0]:
         case 'QTPC': #Weekly
-            sql = f'''with myalias as (SELECT pir.*, WEEK(pi.CREATE_DATE, 1) as week_of_year FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
+            sql = f'''with myalias as (SELECT pir.*, pi.RESPONSE_DATE, WEEK(pi.CREATE_DATE, 1) as week_of_year FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
             where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by week_of_year desc limit 26 ) select * from myalias order by week_of_year asc;'''
         case _:
-             sql = f'''with myalias as (SELECT pir.*, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
+             sql = f'''with myalias as (SELECT pir.*, pi.RESPONSE_DATE, pi.CREATE_DATE FROM PPL_INPT_RSPN pir inner join PEOPLE_INPUT pi on pir.INPUT_ID = pi.INPUT_ID 
             where pi.SUBJECT like '{actioncode[0]}%' and pi.CLOSED = 'Y' and CREATE_DATE > '2023-11-01' order by CREATE_DATE desc limit 12 ) select * from myalias order by CREATE_DATE asc;'''
 
         # ic(sql)
     mydata = utils.getDatabaseData(sql)
-    # ic(mydata)
+    ic(mydata)
     myset = []
     # myvalues = []
     myperiod = []
@@ -233,35 +228,58 @@ def getdataset(actioncode):
 
     for i in range(len(mydata)):
         valueonly = -1
+        responseText = mydata[i][1]
+        global maxperiod
+        # iterate through the data
+        # for j in range(2, len(mydata[i])):
+        #     ic(mydata[i][j])
 
-        if 'QTPH' in actioncode[0]:
+        # Because the response date is not always populated, we need to get the date from the response text
+        furDate = mydata[i][2] # followup response date
+        if 'QTPH' in actioncode[0]: # monthly
             # ic(mydata[i][1])
-            yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
-            if yyyymm:
-                yearmonth = yyyymm.group(0)
-                period = utils.threelettermonth(yearmonth)
+            if furDate == None:
+                yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
+                if yyyymm:
+                    yearmonth = yyyymm.group(0)
+                    period = utils.threelettermonth(yearmonth)
+                    myperiod.append(period)
+            else:
+                # convert the date to a string and get the year and month
+                strFurDate = str(furDate)
+                period = utils.threelettermonth(strFurDate[:7])
                 myperiod.append(period)
-        else:
-            mydate = re.search(r'(\d+-\d+-\d+)', mydata[i][1])
-            ic(mydate)
-            if mydate:
-                # convert date to week number
-                period = utils.weekofyear(mydate.group(0))
-                myperiod.append(period)
-                # determine greatest period for the x-axis set maxperiod as the global variable
-                global maxperiod
+                
+
+            # determine greatest period for the x-axis set maxperiod as the global variable
+            try:
                 if period > maxperiod:
                     maxperiod = period
+            except:
+                # ic(period)
+                # ic(maxperiod)
+                pass
 
+        else: # weekly
+            if furDate == None:
+                mydate = re.search(r'(\d+-\d+-\d+)', mydata[i][1])
+                period = utils.weekofyear(mydate.group(0))
+                myperiod.append(period)
+            else:
+                period = utils.weekofyear(furDate[:10])
+                myperiod.append(period)
             
+            # determine greatest period for the x-axis set maxperiod as the global variable
+            # global maxperiod
+            try:
+                if period > maxperiod:
+                    maxperiod = period
+            except:
+                # ic(period)
+                # ic(maxperiod)
+                pass
+
         
-        # # use regex to match curly brace dictionary in the response
-        # yyyymm = re.search(r'(\d+.\d+)', mydata[i][1])
-        # # ic(yyyymm)
-        # if yyyymm:
-        #     yearmonth = yyyymm.group(0)
-        #     period = utils.threelettermonth(yearmonth)
-        #     myperiod.append(period)
         
         # use regex to match curly brace dictionary item
         mymatch = re.search(r'({.*})', mydata[i][1])        

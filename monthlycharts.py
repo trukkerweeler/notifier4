@@ -107,7 +107,7 @@ def createChart(chartdata):
         case 'Tank 13 Pass Citric':
             tank13file.savefig(plt.gcf())
         case 'Quench Tank':
-            quenchfile.savefig(plt.gcf())            
+            quenchfile.savefig(plt.gcf(), orientation='landscape')            
         case _:
             ic("No match for saving Trend PDF.")
             plt.show()
