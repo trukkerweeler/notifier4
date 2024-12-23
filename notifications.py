@@ -1,7 +1,7 @@
 import utils
 # from email.message import EmailMessage
 from datetime import datetime, timedelta
-import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project, correctivehelper, competency
+import sysdoc, sysdocsetup, corrective, input, supplier, noninvshl, recurring, project, correctiveHelper, competency
 
 
 def formatOverdueASL(overdueASL):
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     print("Sysdoc Done-------------------")
     corrective.main()
     print("Corrective Done-------------------")
-    correctivehelper.main()
+    correctiveHelper.main()
     print("Corrective Helper Done-------------------")
     recurring.main()
     print("Recurring Done-------------------")

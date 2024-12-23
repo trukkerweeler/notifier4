@@ -124,6 +124,51 @@ def updateDatabaseData(sql):
             connection = None
     return
 
+def insertSqlValues(sql, values):
+    # print(sql)
+    import mysql.connector
+    from mysql.connector import Error
+    try:
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
+        if connection.is_connected():
+            cursor = connection.cursor()
+            cursor.execute(sql, values)
+            connection.commit()
+            # print(f"Inserted into {table}")
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+    finally:
+        if (connection.is_connected()):
+            connection.close()
+            connection = None
+    return
+
+
+def updateSqlValues(sql, values):
+    # print(sql)
+    import mysql.connector
+    from mysql.connector import Error
+    try:
+        connection = mysql.connector.connect(host=os.getenv('DB_HOST'),
+                                             database=os.getenv('DB_NAME'),
+                                             user=os.getenv('DB_USER'),
+                                             password=os.getenv('DB_PASS'))
+        if connection.is_connected():
+            cursor = connection.cursor()
+            cursor.execute(sql, values)
+            connection.commit()
+            # print(f"Inserted into {table}")
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+    finally:
+        if (connection.is_connected()):
+            connection.close()
+            connection = None
+    return
+
 
 def emailAddress(name):
     import mysql.connector
@@ -221,8 +266,8 @@ def getAttachmentPath(sysid, recType):
         case "sysdoc": 
             path = "C:\\Users\\timk\\Documents\\Python\\sysdoc\\records\\"
         case "corrective":
-            path = "\\\\fs1\\Quality - Records\\10200C - Corrective Actions\\2023\\"
-            path = "K:\\Quality - Records\\10200C - Corrective Actions\\2023\\"
+            path = "\\\\fs1\\Quality - Records\\10200 - Corrective Actions\\2023\\"
+            path = "K:\\Quality - Records\\10200 - Corrective Actions\\2023\\"
             
         case default:
             path = ""
@@ -288,8 +333,13 @@ def notifyCorrective(caid, stage):
     """Insert a record into the CORRECTIVE_NOTIFY table."""
     # print(caid)
     # print(stage)
+    # prepend caid with zeros until it is 7 characters long
+    while len(caid) < 7:
+        caid = "0" + caid
+        
     sql = f"insert into CORRECTIVE_NOTIFY (CORRECTIVE_ID, STAGE, NOTIFY_DATE) values ('{caid}', '{stage}', NOW())"
     updateDatabaseData(sql)
+    
 
 def getRcaRequestCount(caid, stage):
     """Get the number of RCA requests."""
@@ -385,7 +435,7 @@ def sendHtmlMail(to_email, subject, message, from_email="quality@ci-aviation.com
     
     # if subject is Root Cause than add attachment
     if subject.__contains__("Root Cause"):
-        attachments = [r"K:\Quality\10200C - Corrective Action\5-why instructions.doc", r"K:\Quality\10200C - Corrective Action\5 Whys Worksheet.docx"]
+        attachments = [r"K:\Quality\10200 - Corrective Action\5-why instructions.doc", r"K:\Quality\10200 - Corrective Action\5 Whys Worksheet.docx"]
         for attachment in attachments:
             with open(attachment, "rb") as f:
                 file_data = f.read()
@@ -417,6 +467,43 @@ def inthismanymysqldays(days):
     """Get the date in this many days."""
     mydate = datetime.today() + timedelta(days=days)
     return mydate.strftime('%Y-%m-%d')
+
+def insertInput(input):
+    """Insert an INPUT into the database."""
+    input_id = getNextSysid("INPUT_ID")
+    due_date = datetime.today() + timedelta(days=14)
+    due_date = due_date.strftime('%Y-%m-%d')
+    sql = f"""insert into PEOPLE_INPUT (
+    INPUT_ID
+    , PROJECT_ID
+    , PEOPLE_ID
+    , INPUT_DATE
+    , DUE_DATE
+    , INPUT_TYPE
+    , ASSIGNED_TO
+    , SUBJECT
+    , CREATE_BY
+    , CREATE_DATE
+    , CLOSED
+    ) 
+    values 
+    ('{input_id}'
+    , '{input['PROJECT_ID']}'
+    , '{input['PEOPLE_ID']}'
+    , NOW()
+    , '{due_date}'
+    , 'STMT'
+    , '{input['ASSIGNED_TO']}'
+    , '{input['SUBJECT']}'
+    , '{input['CREATED_BY']}'
+    , NOW()
+    , 'N')"""
+    # ic(sql)
+    updateDatabaseData(sql)
+    
+    inputtextsql = f"""insert into PPL_INPT_TEXT (INPUT_ID, INPUT_TEXT) values ('{input_id}', '{input['TEXT']}')"""
+    # ic(inputtextsql)
+    updateDatabaseData(inputtextsql)
     
 
 if __name__ == '__main__':

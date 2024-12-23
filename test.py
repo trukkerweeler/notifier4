@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import utils
+from icecream import ic
 
 # Get today's date
 due_date = datetime.today()
@@ -34,6 +35,27 @@ if due_date.weekday() <= 4:
 #     print(f"Move back 4 days: {due_date}")
 
 
+# Calculate the first day of the next year
+first_day_next_year = datetime(datetime.today().year + 1, 1, 1)
 
+# Calculate the first day of next July
+first_day_next_july = datetime(datetime.today().year, 7, 1)
+if datetime.today() >= first_day_next_july:
+    first_day_next_july = datetime(datetime.today().year + 1, 7, 1)
 
-# print todays date
+# Determine which date comes first
+earliest_date = min(first_day_next_year, first_day_next_july)
+ic(earliest_date)
+
+# Calculate the first day of the next standard quarter
+# (January, April, July, October)
+if datetime.today().month < 4:
+    next_quarter = datetime(datetime.today().year, 4, 1)
+elif datetime.today().month < 7:
+    next_quarter = datetime(datetime.today().year, 7, 1)
+elif datetime.today().month < 10:
+    next_quarter = datetime(datetime.today().year, 10, 1)
+else:
+    next_quarter = datetime(datetime.today().year + 1, 1, 1)
+ic(next_quarter)
+

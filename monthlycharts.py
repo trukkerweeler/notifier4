@@ -88,6 +88,15 @@ def createChart(chartdata):
         # plt.title('Trend of ' + units + ' in ' + label[1])
         plt.title(chartlabel + ' Trend')
     
+    # Set chart limits
+    match label:
+        case 'Alodine Tank 11':
+            plt.ylim(3.4, 4.0)
+            # set ax hline for 3.6
+            plt.axhline(y=3.6, color='r', linestyle='--')
+        case _: 
+            pass
+        
 
     plt.tight_layout()
 
@@ -326,6 +335,7 @@ def getdataset(actioncode):
 
 
 def main():
+    # >>>>>>>>See monthlychartsquenchtank for quench tank chart<<<<<<<<
     # labels = [['01TE','Clean Tank 01',['Pct','F']],['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']],['11PH','Alodine Tank 11',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
     # labels = [['11PH','Alodine Tank 11',['pH']],['13TE','Tank 13 Pass Citric',['pH']],['QTPH','Quench Tank',['pH']],['08TE','Alodine Tank 08',['mL','pH', 'F']], ['07TE', 'Passivation Tank 07', ['PBV', 'Fe', 'F']]]
     # labels = [['01TE','Clean Tank 01',['Pct','F']]] 
@@ -336,14 +346,13 @@ def main():
     # labels = [['08TE','Alodine Tank 08',['mL','pH', 'F']], ['05TE', 'Deox Tank 05', ['mL', 'Pct', 'F','g']]]
     # labels = [['11PH','Alodine Tank 11',['pH']]]
     # labels = [['13TE','Tank 13 Pass Citric',['pH']]]
-    labels = [['QTPC','Quench Tank Polymer',['s']]]
+    labels = [['01TE','Clean Tank 01', ['Pct','F']], ['08TE','Alodine Tank 08',['mL','pH', 'F']] ]
 
     for label in labels:
-        ic(label)
+        # ic(label)
         mydataset = getdataset(label)
-        ic(mydataset)
-        # createChart(mydataset)
-        
+        # ic(mydataset)
+        createChart(mydataset)        
 
 
 if __name__ == "__main__":

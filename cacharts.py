@@ -156,8 +156,8 @@ def caAgingChart(caData):
     ax.set_xlabel('Month')
     # set the y-axis label
     ax.set_ylabel('Count')
-    # Set a target line of 60 days
-    ax.axhline(y=60, color='r', linestyle='--')
+    # Set a target line of 90 days
+    ax.axhline(y=90, color='r', linestyle='--')
     # save the chart to a pdf
     pdf = PdfPages('ca_chart.pdf')
     pdf.savefig(fig)

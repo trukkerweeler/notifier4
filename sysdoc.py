@@ -2,6 +2,7 @@ import os, utils
 from datetime import datetime, timedelta
 from icecream import ic
 import datetime
+import re
 
 
 def releaseNotifications():
@@ -31,7 +32,7 @@ def releaseNotifications():
 
 def checkDocs():
     """Goes through docs_avail table and checks that each file exists for both the control and distribution locations. 
-    Sends email for missing docs. Only runs once per day."""
+    Sends email for missing docs."""
   
     audit = []
     sql = "SELECT * FROM DOCS_AVAIL join DOCUMENTS on DOCS_AVAIL.DOCUMENT_ID = DOCUMENTS.DOCUMENT_ID where DOCUMENTS.STATUS = 'C' and DOCS_AVAIL.CTRL_DOC != 'Global Generated';"
@@ -44,17 +45,38 @@ def checkDocs():
         else:
             if not os.path.exists(row[1]):
                 # print(f"Control location moved?: {row[0]} - {row[1]}")
-                audit.append(row[0] + " (ctrl/moved?)")
+                if re.search(r"_r\d{2}\.", row[1]):
+                    extractedrevision = int(re.search(r"_r(\d{2})\.", row[1]).group(1))
+                    extractedrevision += 1
+                    incrementedpath = row[1].replace(re.search(r"_r\d{2}\.", row[1]).group(), f"_r{extractedrevision:02d}.")
+                    if os.path.exists(incrementedpath):
+                        audit.append(row[0] + " (Found next rev... updating control location)")
+                        sql = f"update DOCS_AVAIL set CTRL_DOC = %s where DOCUMENT_ID = %s;"
+                        values = (incrementedpath, row[0])
+                        utils.updateSqlValues(sql, values)
+                    else:
+                        audit.append(row[0] + " (ctrl/moved?)")
         
         # check distribution location
-        if row[2] is None:
-            # print(f"Distribution location missing:  {row[0]}")
+        if row[2] is None:            
             audit.append(row[0] + " (dist/missing db entry)")
         else:
             if not os.path.exists(row[2]):
-                # print(f"Distribution location moved?: {row[0]} - {row[2]}")
-                audit.append(row[0] + " (dist/moved?)")
-    ic(f"{len(audit)}\n\n{audit}")
+                if re.search(r"_r\d{2}\.", row[1]):
+                    extractedrevision = int(re.search(r"_r(\d{2})\.", row[1]).group(1))
+                    extractedrevision += 1
+                    incrementedpath = row[1].replace(re.search(r"_r\d{2}\.", row[1]).group(), f"_r{extractedrevision:02d}.")
+                    if os.path.exists(incrementedpath):
+                        audit.append(row[0] + " (Found next rev... updating distribution location)")
+                        sql = f"update DOCS_AVAIL set DIST_DOC = %s where DOCUMENT_ID = %s;"
+                        values = (incrementedpath, row[0])
+                        utils.updateSqlValues(sql, values)
+                    else:
+                        # print(f"Distribution location moved?: {row[0]} - {row[2]}")
+                        audit.append(row[0] + " (dist/moved?)")
+    # ic(f"{len(audit)}\n\n{audit}")
+    # ic(audit)
+    
     utils.sendMail("tim.kent@ci-aviation.com", f"Missing Documents - {datetime.datetime.now()}", f"Missing Documents: {len(audit)}\n\n{audit}")
 
 

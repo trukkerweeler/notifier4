@@ -26,6 +26,8 @@ def ncmIssueNotification():
 
         insertSql = f"insert into NCM_NOTIFY (NCM_ID, ACTION, NOTIFIED_DATE, ASSIGNED_TO) values ('{ncmid}','{status}',LOCALTIME(), '{assto}');"
         utils.updateDatabaseData(insertSql)
+    
+    ic("NCM issue notification completed: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 if __name__ == '__main__':
     ncmIssueNotification()

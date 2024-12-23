@@ -6,12 +6,12 @@ import icecream as ic
 def noninvshl():
     # xlfile = r"C:\Users\timK\Documents\Non Inventory Expirations.xls"
     xlfile = r"K:\Quality\08540 - Preservation\Non Inventory Expirations.xls"
-    df = pd.read_excel(xlfile, sheet_name="Sheet1", header=0, index_col=None, usecols="A:G", engine="xlrd")
+    df = pd.read_excel(xlfile, sheet_name="Sheet1", header=0, index_col=None, usecols="A:H", engine="xlrd")
     print(df)
     # notification = "<html><body><h3>Non-Inventory Expirations</h3>\n"
     # notification += "<table border=1><tr><th>PO</th><th>Part</th><th>Description</th><th>Lot</th><th>DOM</th><th>DOE</th><th>Disposition</th></tr>"
     notification = "Non-Inventory Expirations\n"
-    notification += "PO      Part                 Description          Lot                  DOM        Expiration   Disposition\n"
+    notification += "Dt Rec  PO      Part                 Description          Lot                  DOM        Expiration   Disposition\n"
     for row in df.iterrows():
         # print(row[0])
         # print(row[1])

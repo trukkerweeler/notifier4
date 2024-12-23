@@ -177,7 +177,7 @@ def ncmAgingChart(ncmData):
     # set the x-axis label
     ax.set_xlabel('Month')
     # set the y-axis label
-    ax.set_ylabel('Count')
+    ax.set_ylabel('Days')
     # Set a target line of 30 days
     ax.axhline(y=30, color='r', linestyle='--')
     # save the chart to a pdf

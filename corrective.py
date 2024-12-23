@@ -64,7 +64,7 @@ def closeout():
         if attachmentPath is not None:
             attachment = attachmentPath
         else:
-            attachment = "K:\\Quality - Records\\10200C - Corrective Actions"
+            attachment = "K:\\Quality - Records\\10200 - Corrective Actions"
         notification = '''<p>The following corrective action has been closed. Please review and take appropriate final action(s). </p><br> <p>%s</p> <p>Corrective id: %s</p>''' % (attachment, corrid[0])
         # print(f"--- {corrid[0]} ---")
         # print(notification)
@@ -93,7 +93,7 @@ def issuedNotification():
     for corrid, assto, trend in issued:
         # print(corrid)
         notification = '''<p>The following corrective action has been issued. Please review and take action as needed. \nCorrective id: %s \n\nDescription: %s''' % (corrid, trend)
-        notification += "<br><br>Corrective Action files are found at:</p> <a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality - Records/10200C - Corrective Actions</a>"
+        notification += "<br><br>Corrective Action files are found at:</p> <a href='K:\\\\Quality - Records\\\\10200 - Corrective Actions'>K:/Quality - Records/10200 - Corrective Actions</a>"
         # print(f"--- {corrid} ---")
         # print(notification)
         asstoemail = utils.emailAddress(assto.upper())
@@ -127,7 +127,7 @@ def rootcse():
         pcount = utils.getRcaRequestCount(caid, "R")
         # ic(pcount)
         notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. 
-If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {projectname} </p><a href='\\\\fs1\\Common\\Quality - Records\\10200C - Corrective Actions'>\\\\fs1\\Common\\Quality - Records\\10200C - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
+If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {projectname} </p><a href='\\\\fs1\\Common\\Quality - Records\\10200 - Corrective Actions'>\\\\fs1\\Common\\Quality - Records\\10200 - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
         asstoemail = utils.emailAddress(assto.upper())
         # asstoemail = emails[assto.upper()]
         # print(f'Assigned to: {asstoemail}')
@@ -137,9 +137,9 @@ If you have any questions please contact the quality manager.</p> <p>Corrective 
             caid = caid[3:]
             utils.notifyCorrective(caid, "R")
         else:
-            # notification = "<p>This is a paragraph!</p><br><a href='K:\\\\Quality - Records\\\\10200C - Corrective Actions'>K:/Quality/10200C - Corrective Actions</a>"
+            # notification = "<p>This is a paragraph!</p><br><a href='K:\\\\Quality - Records\\\\10200 - Corrective Actions'>K:/Quality/10200 - Corrective Actions</a>"
             notification = f'''<p>A root cause determination is needed. Please reply with root cause statement. The root cause statement cannot be a restatement of the finding. Helpful information on making good root cause analysis are attached. 
-If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {projectname} </p><a href='\\\\fs1\\Common\\Quality - Records\\10200C - Corrective Actions'>\\\\fs1\\Common\\Quality - Records\\10200C - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
+If you have any questions please contact the quality manager.</p> <p>Corrective id: {caid} </p><p>Description: {projectname} </p><a href='\\\\fs1\\Common\\Quality - Records\\10200 - Corrective Actions'>\\\\fs1\\Common\\Quality - Records\\10200 - Corrective Actions</a><br><p>(Count of previous requests: {pcount})</p>'''
         
             utils.sendHtmlMail(to_email=['tim.kent@ci-aviation.com'], subject=f"Corrective Action Root Cause: {caid}", message=notification)
             print(notification)

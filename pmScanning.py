@@ -31,7 +31,7 @@ def main():
 
             # Delete outshined.png if it exists
             try:
-                os.remove('preventivemx.png')
+                os.remove('pmout.png')
             except:
                 pass
 
@@ -43,12 +43,13 @@ def main():
             # Open the PNG file
             image = Image.open('out.png')        
             # recordid = image.crop((650, 220, 1000, 325)) # PM
-            recordid = image.crop((650, 275, 1000, 350)) # PM #This works for the Tig Welder 2024-0912
+            # recordid = image.crop((650, 275, 1000, 350)) # PM #This works for the Tig Welder 2024-0912
+            recordid = image.crop((650, 250, 1000, 325)) # PM #This works for the Air Compressor 2024-1209
 
             # Save the cropped image
-            recordid.save('preventivemx.png')
+            recordid.save('pmout.png')
 
-            iid = ocrpng.main('preventivemx.png', 'P')
+            iid = ocrpng.main('pmout.png', 'P')
             ic(iid)
             if titleimage:
                 title = ocrpng.main('titleimage.png', 'N') #name
@@ -62,7 +63,8 @@ def main():
             print("ocr: " + iid + "(" + str(len(iid)) + ")")
 
             # If Spot Welder in iid, then rename the file
-            if 'Spot Welde' in iid or 'SpotWelde' in iid:
+            # if 'Spot Welde' in iid or 'SpotWelde' in iid: OCRS: 'Spot vveider'
+            if re.search(r'SPOT\s?(W|V{2})E(L|I)D', iid.upper()):
                 month_date_code = input("Enter the month and date code for file: " + file)
                 # replace the first part of the file name with the month date code
                 new_file = file.replace(file[:front_length], month_date_code)
@@ -161,7 +163,7 @@ def main():
                 shutil.move(new_file, new_folder)
                 print('')
             
-            if 'SuperMax' in iid:
+            if re.search(r'uper(i|v|m)*ax', iid):
                 new_file = my_file.replace('.pdf', ' - SuperMax.pdf')
                 os.rename(my_file, new_file)
                 print(new_file)
@@ -179,6 +181,17 @@ def main():
                 new_folder = r'K:\Quality - Records\8511 - Equipment\Compressed Air'
                 shutil.move(new_file, new_folder)
                 print('')
+                
+            # Part marking (crop too low)
+            if re.search(r'Part.*ing', iid):
+                ic("Part Marking")
+                new_file = my_file.replace('.pdf', ' - I-Mark.pdf')
+                os.rename(my_file, new_file)
+                print(new_file)
+                # Move new file to a new folder
+                new_folder = r'K:\Quality - Records\8511 - Equipment\I-Mark'
+                shutil.move(new_file, new_folder)
+                print('')
             
             # if my_file exists
             if os.path.isfile(my_file):
@@ -191,6 +204,38 @@ def main():
                         ic('Moving ' + my_file + ' to ' + autofilersdir)                                                                                                                                                                                                                                                             
                         shutil.move(my_file, autofilersdir)
                         ic('')
+                        break
+            
+            # if my_file exists
+            if os.path.isfile(my_file):
+                # Tank 1 (SuperBee 300LF): Rae200LF)
+                if re.search(r'(B|R)(A|E)*((2|3)00LF)', iid.upper()):
+                    # Move new file to autofilers
+                    ic('Moving ' + my_file + ' to ' + autofilersdir)                                                                                                                                                                                                                                                             
+                    shutil.move(my_file, autofilersdir)
+                    ic('')
+                    break
+            
+            # if my_file exists
+            if os.path.isfile(my_file):
+                # Tank 11
+                if re.search(r'TING\((TYPE)I(I|D)', iid.upper()):
+                    # Move new file to autofilers
+                    ic('Moving ' + my_file + ' to ' + autofilersdir)                                                                                                                                                                                                                                                             
+                    shutil.move(my_file, autofilersdir)
+                    ic('')
+                    break
+            
+            # if my_file exists
+            if os.path.isfile(my_file):
+                # Tank 13 (Testing (Citric))
+                # ocrs: ("SENGE(OFTENY",)
+                if re.search(r'NG(E*)\((C|O)(F|I)T(R|E)', iid.upper()):
+                    # Move new file to autofilers
+                    ic('Moving ' + my_file + ' to ' + autofilersdir)                                                                                                                                                                                                                                                             
+                    shutil.move(my_file, autofilersdir)
+                    ic('')
+                    break
 
             # ITW GEMA Powder Gun
             if re.search(r'(P|F)OW(D|O)ER', iid.upper()):
@@ -211,9 +256,47 @@ def main():
                 new_folder = r'K:\Quality - Records\8511 - Equipment\Shear - Amada'
                 shutil.move(new_file, new_folder)
                 print('')
+            
+            # Assembly Area Pneumatic Tools
+            if re.search(r'MBLY-PNEU', iid.upper()):
+                new_file = my_file.replace('.pdf', ' - APT.pdf')
+                os.rename(my_file, new_file)
+                print(new_file)
+                # Move new file to a new folder
+                new_folder = r'K:\Quality - Records\8511 - Equipment\Assembly-Pneumatic Tools'
+                shutil.move(new_file, new_folder)
+                print('')
+                
+            # Auto Sert
+            if re.search(r'AUTO-SERT', iid.upper()):
+                new_file = my_file.replace('.pdf', ' - AutoSert.pdf')
+                os.rename(my_file, new_file)
+                print(new_file)
+                # Move new file to a new folder
+                new_folder = r'K:\Quality - Records\8511 - Equipment\Auto Sert'
+                shutil.move(new_file, new_folder)
+                print('')
+            
+            # Calibration
+            if re.search(r'dancewithre', iid):
+                new_file = my_file.replace('.pdf', ' - Calibration.pdf')
+                os.rename(my_file, new_file)
+                print(new_file)
+                # Move new file to a new folder
+                shutil.move(new_file, autofilersdir)
+                print('')
+                
+            # Deoxalume 2310
+            if re.search(r'e2310', iid):
+                # print(my_file)
+                # Move new file to a new folder
+                shutil.move(my_file, autofilersdir)
+                print('Moved ' + my_file + ' to ' + autofilersdir) 
+                print('')
           
 
 
 if __name__ == '__main__':
     main()
+    print('<<<<<<Preventive Maintenance scan complete.')
     
