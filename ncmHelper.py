@@ -8,6 +8,10 @@ def makeNcmFolders():
     year = datetime.now().strftime("%Y")
     my_path = r"K:\Quality - Records\8700 - Control of Nonconforming Product"+ "\\" + year
     # ic("my_path", my_path)
+    # Cheeck if the path exists, if not create it
+    if not os.path.exists(my_path):
+        os.makedirs(my_path)
+        ic("my_path created", my_path)    
 
     # make array of the folders in the path
     folders = os.listdir(my_path)

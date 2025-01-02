@@ -5,7 +5,7 @@ import input
 import datetime
 import pmScanning
 import ncm
-import correctiveHelper
+import correctiveHelper, corrective
 import autofilercal
 import ncmHelper
 import ncmScanning
@@ -15,6 +15,8 @@ def mailer():
     if datetime.datetime.today().weekday() < 5:
         print("Corrective helper started: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         correctiveHelper.main()
+        print("Corrective email started: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        corrective.main()
         print("Sysdoc release notification: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         sysdoc.releaseNotifications()
         print("New action issued notification: " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
